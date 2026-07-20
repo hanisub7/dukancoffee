@@ -49,6 +49,9 @@ export default async function ProductsPage() {
                 <th className="px-6 py-4 font-semibold">Category</th>
                 <th className="px-6 py-4 font-semibold">Model</th>
                 <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 text-right font-semibold">
+                  Actions
+                </th>
               </tr>
             </thead>
 
@@ -68,6 +71,24 @@ export default async function ProductsPage() {
                   <td className="px-6 py-4">{product.model}</td>
 
                   <td className="px-6 py-4">{product.status}</td>
+
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end gap-4">
+                      <Link
+                        href={`/admin/products/${product.id}/images`}
+                        className="font-medium text-green-600 hover:underline"
+                      >
+                        Images
+                      </Link>
+
+                      <Link
+                        href={`/admin/products/${product.id}/edit`}
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { prisma } from "../../lib/prisma";
 
-export default async function BrandsPage() {
-  const brands = await prisma.brand.findMany({
+export default async function RetailersPage() {
+  const retailers = await prisma.retailer.findMany({
+    include: {
+      country: true,
+    },
     orderBy: {
       name: "asc",
     },
@@ -12,27 +15,27 @@ export default async function BrandsPage() {
     <>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Brands</h1>
+          <h1 className="text-3xl font-bold">Retailers</h1>
 
           <p className="mt-2 text-gray-600">
-            Manage coffee machine brands.
+            Manage coffee machine retailers.
           </p>
         </div>
 
         <Link
-          href="/admin/brands/new"
+          href="/admin/retailers/new"
           className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
         >
-          + Add Brand
+          + Add Retailer
         </Link>
       </div>
 
-      {brands.length === 0 ? (
+      {retailers.length === 0 ? (
         <div className="mt-8 rounded-lg border bg-white p-12 text-center">
-          <h2 className="text-xl font-semibold">No brands yet</h2>
+          <h2 className="text-xl font-semibold">No retailers yet</h2>
 
           <p className="mt-2 text-gray-500">
-            Create your first brand.
+            Create your first retailer.
           </p>
         </div>
       ) : (
@@ -40,31 +43,44 @@ export default async function BrandsPage() {
           <table className="w-full">
             <thead className="border-b bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left">Brand</th>
+                <th className="px-6 py-4 text-left">Retailer</th>
+                <th className="px-6 py-4 text-left">Country</th>
                 <th className="px-6 py-4 text-left">Website</th>
+                <th className="px-6 py-4 text-left">Affiliate Status</th>
                 <th className="px-6 py-4 text-left">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
 
             <tbody>
-              {brands.map((brand) => (
-                <tr key={brand.id} className="border-b last:border-b-0">
+              {retailers.map((retailer) => (
+                <tr
+                  key={retailer.id}
+                  className="border-b last:border-b-0"
+                >
                   <td className="px-6 py-4 font-medium">
-                    {brand.name}
+                    {retailer.name}
                   </td>
 
                   <td className="px-6 py-4">
-                    {brand.officialWebsiteUrl ?? "-"}
+                    {retailer.country.nameEn}
                   </td>
 
                   <td className="px-6 py-4">
-                    {brand.active ? "Active" : "Inactive"}
+                    {retailer.websiteUrl}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    {retailer.affiliateProgramStatus}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    {retailer.active ? "Active" : "Inactive"}
                   </td>
 
                   <td className="px-6 py-4 text-right">
                     <Link
-                      href={`/admin/brands/${brand.id}/edit`}
+                      href={`/admin/retailers/${retailer.id}/edit`}
                       className="font-medium text-blue-600 hover:underline"
                     >
                       Edit
