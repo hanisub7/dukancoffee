@@ -1,0 +1,365 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Country {
+  id           String     @id @default(uuid()) @db.Uuid
+  nameEn       String     @map("name_en")
+  nameAr       String     @map("name_ar")
+  code         String     @unique @db.Char(2)
+  currencyCode String     @map("currency_code") @db.Char(3)
+  localeEn     String     @map("locale_en")
+  localeAr     String     @map("locale_ar")
+  enabled      Boolean    @default(false)
+  retailers    Retailer[]
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@map("countries")
+}
+
+model Brand {
+  id                 String    @id @default(uuid()) @db.Uuid
+  name               String
+  slug               String    @unique
+  logoUrl            String?   @map("logo_url")
+  officialWebsiteUrl String?   @map("official_website_url")
+  active             Boolean   @default(true)
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  deletedAt          DateTime? @map("deleted_at")
+  products           Product[]
+
+  @@map("brands")
+}
+
+model Category {
+  id        String    @id @default(uuid()) @db.Uuid
+  slug      String    @unique
+  nameEn    String    @map("name_en")
+  nameAr    String    @map("name_ar")
+  active    Boolean   @default(true)
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Retailer {
+  id                     String            @id @default(uuid()) @db.Uuid
+  countryId              String            @map("country_id") @db.Uuid
+  name                   String
+  slug                   String
+  websiteUrl             String            @map("website_url")
+  logoUrl                String?           @map("logo_url")
+  affiliateProgramStatus AffiliateStatus   @default(NOT_JOINED) @map("affiliate_program_status")
+  priceUpdateMethod      PriceUpdateMethod @default(MANUAL) @map("price_update_method")
+  active                 Boolean           @default(true)
+  country                Country           @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  offers                 Offer[]
+  createdAt              DateTime          @default(now()) @map("created_at")
+  updatedAt              DateTime          @updatedAt @map("updated_at")
+  deletedAt              DateTime?         @map("deleted_at")
+
+  @@unique([countryId, slug])
+  @@index([countryId])
+  @@map("retailers")
+}
+
+model Product {
+  id                 String                @id @default(uuid()) @db.Uuid
+  brandId            String                @map("brand_id") @db.Uuid
+  categoryId         String                @map("category_id") @db.Uuid
+  model              String
+  fullName           String                @map("full_name")
+  slug               String                @unique
+  modelNumber        String?               @map("model_number")
+  releaseYear        Int?                  @map("release_year")
+  status             ProductStatus         @default(DRAFT)
+  officialProductUrl String?               @map("official_product_url")
+  manualUrl          String?               @map("manual_url")
+  warrantyUrl        String?               @map("warranty_url")
+  lastVerifiedAt     DateTime?             @map("last_verified_at")
+  brand              Brand                 @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  category           Category              @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  specification      ProductSpecification?
+  features           ProductFeature[]
+  images             ProductImage[]
+  documents          Document[]
+  sources            Source[]
+  offers             Offer[]
+  createdAt          DateTime              @default(now()) @map("created_at")
+  updatedAt          DateTime              @updatedAt @map("updated_at")
+  deletedAt          DateTime?             @map("deleted_at")
+
+  @@unique([brandId, modelNumber])
+  @@index([brandId])
+  @@index([categoryId])
+  @@index([status])
+  @@map("products")
+}
+
+model ProductSpecification {
+  id        String @id @default(uuid()) @db.Uuid
+  productId String @unique @map("product_id") @db.Uuid
+
+  machineType              String?  @map("machine_type")
+  pumpPressureBar          Decimal? @map("pump_pressure_bar") @db.Decimal(5, 2)
+  waterTankL               Decimal? @map("water_tank_l") @db.Decimal(6, 2)
+  beanHopperG              Int?     @map("bean_hopper_g")
+  groundsContainerCapacity Int?     @map("grounds_container_capacity")
+
+  grinderType     String? @map("grinder_type")
+  grinderMaterial String? @map("grinder_material")
+  grindSettings   Int?    @map("grind_settings")
+
+  milkSystem             String?  @map("milk_system")
+  milkContainerCapacityL Decimal? @map("milk_container_capacity_l") @db.Decimal(6, 2)
+
+  displayType String? @map("display_type")
+
+  powerW      Int?    @map("power_w")
+  voltage     String?
+  frequencyHz Int?    @map("frequency_hz")
+
+  widthMm  Int?     @map("width_mm")
+  heightMm Int?     @map("height_mm")
+  depthMm  Int?     @map("depth_mm")
+  weightKg Decimal? @map("weight_kg") @db.Decimal(6, 2)
+
+  removableWaterTank    Boolean? @map("removable_water_tank")
+  removableBrewGroup    Boolean? @map("removable_brew_group")
+  waterFilterCompatible Boolean? @map("water_filter_compatible")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("product_specifications")
+}
+
+model Feature {
+  id          String  @id @default(uuid()) @db.Uuid
+  slug        String  @unique
+  name        String
+  description String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  productFeatures ProductFeature[]
+
+  @@map("features")
+}
+
+model ProductFeature {
+  productId String @map("product_id") @db.Uuid
+  featureId String @map("feature_id") @db.Uuid
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  feature Feature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([productId, featureId])
+  @@index([featureId])
+  @@map("product_features")
+}
+
+model ProductImage {
+  id String @id @default(uuid()) @db.Uuid
+
+  productId String @map("product_id") @db.Uuid
+
+  url     String
+  altText String? @map("alt_text")
+
+  imageType ImageType @default(MAIN) @map("image_type")
+
+  sortOrder Int @default(0) @map("sort_order")
+
+  sourceUrl String? @map("source_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([imageType])
+  @@map("product_images")
+}
+
+model Document {
+  id String @id @default(uuid()) @db.Uuid
+
+  productId String @map("product_id") @db.Uuid
+
+  title String
+
+  url String
+
+  documentType DocumentType @default(MANUAL) @map("document_type")
+
+  language String? @default("en")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([documentType])
+  @@map("documents")
+}
+
+model Source {
+  id                 String     @id @default(uuid()) @db.Uuid
+  productId          String     @map("product_id") @db.Uuid
+  sourceType         SourceType @map("source_type")
+  sourceUrl          String     @map("source_url")
+  informationCovered String?    @map("information_covered")
+  verifiedAt         DateTime?  @map("verified_at")
+  notes              String?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([productId])
+  @@index([sourceType])
+  @@map("sources")
+}
+
+model Offer {
+  id String @id @default(uuid()) @db.Uuid
+
+  productId  String @map("product_id") @db.Uuid
+  retailerId String @map("retailer_id") @db.Uuid
+
+  productUrl   String  @map("product_url") @db.Text
+  affiliateUrl String? @map("affiliate_url") @db.Text
+
+  currencyCode String @map("currency_code") @db.Char(3)
+
+  currentPrice    Decimal  @map("current_price") @db.Decimal(10, 2)
+  originalPrice   Decimal? @map("original_price") @db.Decimal(10, 2)
+  discountPercent Int?     @map("discount_percent")
+
+  inStock Boolean @default(true) @map("in_stock")
+
+  checkedAt DateTime @default(now()) @map("checked_at")
+
+  product      Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailer     Retailer       @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  priceHistory PriceHistory[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([productId, retailerId])
+  @@index([productId])
+  @@index([retailerId])
+  @@map("offers")
+}
+
+model PriceHistory {
+  id String @id @default(uuid()) @db.Uuid
+
+  offerId String @map("offer_id") @db.Uuid
+
+  price Decimal @db.Decimal(10, 2)
+
+  originalPrice Decimal? @map("original_price") @db.Decimal(10, 2)
+
+  discountPercent Int? @map("discount_percent")
+
+  inStock Boolean @map("in_stock")
+
+  checkedAt DateTime @default(now()) @map("checked_at")
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([offerId])
+  @@index([offerId, checkedAt])
+  @@map("price_history")
+}
+
+model AdminUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  fullName     String    @map("full_name")
+  role         AdminRole @default(ADMIN)
+  active       Boolean   @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+enum AffiliateStatus {
+  NOT_JOINED
+  PENDING
+  ACTIVE
+  INACTIVE
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum PriceUpdateMethod {
+  MANUAL
+  API
+  AFFILIATE_FEED
+  APPROVED_INTEGRATION
+}
+
+enum ProductStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ImageType {
+  MAIN
+  FRONT
+  SIDE
+  BACK
+  LIFESTYLE
+  PACKAGE
+}
+
+enum DocumentType {
+  MANUAL
+  QUICK_START
+  WARRANTY
+  SPEC_SHEET
+  ENERGY_LABEL
+  CLEANING_GUIDE
+}
+
+enum SourceType {
+  MANUFACTURER_PAGE
+  OFFICIAL_MANUAL
+  SPECIFICATION_SHEET
+  WARRANTY_DOCUMENT
+  RETAILER_PAGE
+  AFFILIATE_API
+  PRODUCT_FEED
+}
