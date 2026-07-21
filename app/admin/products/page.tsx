@@ -6,6 +6,7 @@ export default async function ProductsPage() {
     include: {
       brand: true,
       category: true,
+      specification: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -48,6 +49,7 @@ export default async function ProductsPage() {
                 <th className="px-6 py-4 font-semibold">Brand</th>
                 <th className="px-6 py-4 font-semibold">Category</th>
                 <th className="px-6 py-4 font-semibold">Model</th>
+                <th className="px-6 py-4 font-semibold">Specifications</th>
                 <th className="px-6 py-4 font-semibold">Status</th>
                 <th className="px-6 py-4 text-right font-semibold">
                   Actions
@@ -57,28 +59,56 @@ export default async function ProductsPage() {
 
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className="border-b last:border-b-0">
+                <tr
+                  key={product.id}
+                  className="border-b last:border-b-0"
+                >
                   <td className="px-6 py-4 font-medium">
                     {product.fullName}
                   </td>
 
-                  <td className="px-6 py-4">{product.brand.name}</td>
+                  <td className="px-6 py-4">
+                    {product.brand.name}
+                  </td>
 
                   <td className="px-6 py-4">
                     {product.category.nameEn}
                   </td>
 
-                  <td className="px-6 py-4">{product.model}</td>
+                  <td className="px-6 py-4">
+                    {product.model}
+                  </td>
 
-                  <td className="px-6 py-4">{product.status}</td>
+                  <td className="px-6 py-4">
+                    {product.specification ? (
+                      <span className="font-medium text-green-600">
+                        ✓ Complete
+                      </span>
+                    ) : (
+                      <span className="font-medium text-amber-600">
+                        Missing
+                      </span>
+                    )}
+                  </td>
+
+                  <td className="px-6 py-4">
+                    {product.status}
+                  </td>
 
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-4">
+                    <div className="flex justify-end gap-5">
                       <Link
                         href={`/admin/products/${product.id}/images`}
                         className="font-medium text-green-600 hover:underline"
                       >
                         Images
+                      </Link>
+
+                      <Link
+                        href={`/admin/products/${product.id}/specifications`}
+                        className="font-medium text-purple-600 hover:underline"
+                      >
+                        Specifications
                       </Link>
 
                       <Link
