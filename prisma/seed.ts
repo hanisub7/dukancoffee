@@ -1,9 +1,8 @@
 import "dotenv/config";
 
+import bcrypt from "bcrypt";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../app/generated/prisma/client";
-import bcrypt from "bcrypt";
-
 
 const connectionString = process.env.DATABASE_URL;
 
@@ -74,7 +73,7 @@ const countries = [
     localeAr: "ar-OM",
     enabled: false,
   },
-];
+] as const;
 
 const categories = [
   {
@@ -85,8 +84,8 @@ const categories = [
   },
   {
     slug: "fully-automatic",
-    nameEn: "Fully Automatic",
-    nameAr: "آلات أوتوماتيكية بالكامل",
+    nameEn: "Fully Automatic Coffee Machines",
+    nameAr: "آلات القهوة الأوتوماتيكية بالكامل",
     sortOrder: 2,
   },
   {
@@ -97,13 +96,19 @@ const categories = [
   },
   {
     slug: "capsule-machines",
-    nameEn: "Capsule Machines",
-    nameAr: "آلات الكبسولات",
+    nameEn: "Capsule Coffee Machines",
+    nameAr: "آلات القهوة بالكبسولات",
     sortOrder: 4,
   },
-];
+] as const;
 
-async function main() {
+const adminEmail =
+  process.env.SEED_ADMIN_EMAIL ?? "admin@dukancoffee.com";
+
+const adminPassword =
+  process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
+
+async function seedCountries(): Promise<void> {
   for (const country of countries) {
     await prisma.country.upsert({
       where: {
@@ -117,10 +122,14 @@ async function main() {
         localeAr: country.localeAr,
         enabled: country.enabled,
       },
-      create: country,
+      create: {
+        ...country,
+      },
     });
   }
+}
 
+async function seedCategories(): Promise<void> {
   for (const category of categories) {
     await prisma.category.upsert({
       where: {
@@ -138,36 +147,70 @@ async function main() {
       },
     });
   }
+}
 
-  const adminPasswordHash = await bcrypt.hash("ChangeMe123!", 12);
+async function seedAdminUser(): Promise<void> {
+  const existingAdmin = await prisma.adminUser.findUnique({
+    where: {
+      email: adminEmail,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-await prisma.adminUser.upsert({
-  where: {
-    email: "admin@dukancoffee.com",
-  },
-  update: {
-    passwordHash: adminPasswordHash,
-    fullName: "DukanCoffee Admin",
-    role: "SUPER_ADMIN",
-    active: true,
-  },
-  create: {
-    email: "admin@dukancoffee.com",
-    passwordHash: adminPasswordHash,
-    fullName: "DukanCoffee Admin",
-    role: "SUPER_ADMIN",
-    active: true,
-  },
-});
+  if (existingAdmin) {
+    await prisma.adminUser.update({
+      where: {
+        id: existingAdmin.id,
+      },
+      data: {
+        fullName: "DukanCoffee Admin",
+        role: "SUPER_ADMIN",
+        active: true,
+      },
+    });
+
+    return;
+  }
+
+  const passwordHash = await bcrypt.hash(adminPassword, 12);
+
+  await prisma.adminUser.create({
+    data: {
+      email: adminEmail,
+      passwordHash,
+      fullName: "DukanCoffee Admin",
+      role: "SUPER_ADMIN",
+      active: true,
+    },
+  });
+}
+
+async function main(): Promise<void> {
+  console.log("Starting DukanCoffee database seed...");
+
+  await seedCountries();
+  await seedCategories();
+  await seedAdminUser();
 
   console.log("Seed completed successfully.");
   console.log(`Countries processed: ${countries.length}`);
   console.log(`Categories processed: ${categories.length}`);
+  console.log(`Admin account processed: ${adminEmail}`);
 }
 
 main()
   .catch((error: unknown) => {
-    console.error("Seed failed:", error);
+    console.error("Seed failed:");
+
+    if (error instanceof Error) {
+      console.error(error.message);
+      console.error(error.stack);
+    } else {
+      console.error(error);
+    }
+
     process.exitCode = 1;
   })
   .finally(async () => {

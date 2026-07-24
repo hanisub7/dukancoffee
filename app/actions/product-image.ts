@@ -1,77 +1,249 @@
 "use server";
 
+import { ImageType } from "../generated/prisma/client";
+import { prisma } from "../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "../lib/prisma";
-import { ImageType } from "../generated/prisma/client";
 
-export async function createProductImage(
-  productId: string,
-  formData: FormData
-) {
-  const url = String(formData.get("url") ?? "").trim();
-  const altText = String(formData.get("altText") ?? "").trim();
-  const imageTypeValue = String(
-    formData.get("imageType") ?? ""
-  ).trim();
-  const sortOrderValue = String(
-    formData.get("sortOrder") ?? ""
-  ).trim();
-  const sourceUrl = String(
-    formData.get("sourceUrl") ?? ""
-  ).trim();
+function requiredString(formData: FormData, name: string): string {
+  const value = String(formData.get(name) ?? "").trim();
 
-  if (!url) {
-    throw new Error("Image URL is required.");
+  if (!value) {
+    throw new Error(`${name} is required.`);
   }
 
-  const sortOrder = Number(sortOrderValue || 0);
+  return value;
+}
+
+function optionalString(
+  formData: FormData,
+  name: string,
+): string | null {
+  const value = String(formData.get(name) ?? "").trim();
+
+  return value || null;
+}
+
+function parseSortOrder(formData: FormData): number {
+  const value = String(formData.get("sortOrder") ?? "").trim();
+
+  if (!value) {
+    return 0;
+  }
+
+  const sortOrder = Number(value);
 
   if (!Number.isInteger(sortOrder) || sortOrder < 0) {
     throw new Error(
-      "Sort order must be a positive whole number."
+      "Sort order must be a non-negative whole number.",
     );
   }
 
-  let imageType: ImageType = ImageType.FRONT;
+  return sortOrder;
+}
 
-  if (imageTypeValue === "MAIN") {
-    imageType = ImageType.MAIN;
-  } else if (imageTypeValue === "SIDE") {
-    imageType = ImageType.SIDE;
-  } else if (imageTypeValue === "BACK") {
-    imageType = ImageType.BACK;
-  } else if (imageTypeValue === "LIFESTYLE") {
-    imageType = ImageType.LIFESTYLE;
-  } else if (imageTypeValue === "PACKAGE") {
-    imageType = ImageType.PACKAGE;
+function parseImageType(formData: FormData): ImageType {
+  const value = String(formData.get("imageType") ?? "").trim();
+
+  if (
+    !Object.values(ImageType).includes(value as ImageType)
+  ) {
+    throw new Error("A valid image type is required.");
   }
 
-  await prisma.productImage.create({
-    data: {
-      productId,
-      url,
-      altText: altText || null,
-      imageType,
-      sortOrder,
-      sourceUrl: sourceUrl || null,
+  return value as ImageType;
+}
+
+function validateUrl(value: string, fieldName: string): string {
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      throw new Error();
+    }
+
+    return url.toString();
+  } catch {
+    throw new Error(
+      `${fieldName} must be a valid HTTP or HTTPS URL.`,
+    );
+  }
+}
+
+async function getEditableProduct(productId: string) {
+  const product = await prisma.product.findFirst({
+    where: {
+      id: productId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      status: true,
     },
   });
 
+  if (!product) {
+    throw new Error("Product not found.");
+  }
+
+  if (product.status === "ARCHIVED") {
+    throw new Error("Archived products cannot be modified.");
+  }
+
+  return product;
+}
+
+function revalidateProductImagePaths(productId: string) {
+  revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${productId}`);
   revalidatePath(`/admin/products/${productId}/images`);
+}
+
+export async function createProductImage(
+  productId: string,
+  formData: FormData,
+): Promise<never> {
+  await getEditableProduct(productId);
+
+  const url = validateUrl(
+    requiredString(formData, "url"),
+    "Image URL",
+  );
+
+  const altText = optionalString(formData, "altText");
+  const imageType = parseImageType(formData);
+  const sortOrder = parseSortOrder(formData);
+
+  const sourceUrlValue = optionalString(formData, "sourceUrl");
+  const sourceUrl = sourceUrlValue
+    ? validateUrl(sourceUrlValue, "Source URL")
+    : null;
+
+  await prisma.$transaction(async (transaction) => {
+    if (imageType === ImageType.MAIN) {
+      await transaction.productImage.updateMany({
+        where: {
+          productId,
+          imageType: ImageType.MAIN,
+        },
+        data: {
+          imageType: ImageType.FRONT,
+        },
+      });
+    }
+
+    await transaction.productImage.create({
+      data: {
+        productId,
+        url,
+        altText,
+        imageType,
+        sortOrder,
+        sourceUrl,
+      },
+    });
+  });
+
+  revalidateProductImagePaths(productId);
+
+  redirect(`/admin/products/${productId}/images`);
+}
+
+export async function updateProductImage(
+  productId: string,
+  imageId: string,
+  formData: FormData,
+): Promise<never> {
+  await getEditableProduct(productId);
+
+  const existingImage = await prisma.productImage.findFirst({
+    where: {
+      id: imageId,
+      productId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!existingImage) {
+    throw new Error("Product image not found.");
+  }
+
+  const url = validateUrl(
+    requiredString(formData, "url"),
+    "Image URL",
+  );
+
+  const altText = optionalString(formData, "altText");
+  const imageType = parseImageType(formData);
+  const sortOrder = parseSortOrder(formData);
+
+  const sourceUrlValue = optionalString(formData, "sourceUrl");
+  const sourceUrl = sourceUrlValue
+    ? validateUrl(sourceUrlValue, "Source URL")
+    : null;
+
+  await prisma.$transaction(async (transaction) => {
+    if (imageType === ImageType.MAIN) {
+      await transaction.productImage.updateMany({
+        where: {
+          productId,
+          imageType: ImageType.MAIN,
+          id: {
+            not: imageId,
+          },
+        },
+        data: {
+          imageType: ImageType.FRONT,
+        },
+      });
+    }
+
+    await transaction.productImage.update({
+      where: {
+        id: imageId,
+      },
+      data: {
+        url,
+        altText,
+        imageType,
+        sortOrder,
+        sourceUrl,
+      },
+    });
+  });
+
+  revalidateProductImagePaths(productId);
 
   redirect(`/admin/products/${productId}/images`);
 }
 
 export async function deleteProductImage(
   productId: string,
-  imageId: string
-) {
-  await prisma.productImage.delete({
+  imageId: string,
+): Promise<void> {
+  await getEditableProduct(productId);
+
+  const image = await prisma.productImage.findFirst({
     where: {
       id: imageId,
+      productId,
+    },
+    select: {
+      id: true,
     },
   });
 
-  revalidatePath(`/admin/products/${productId}/images`);
+  if (!image) {
+    throw new Error("Product image not found.");
+  }
+
+  await prisma.productImage.delete({
+    where: {
+      id: image.id,
+    },
+  });
+
+  revalidateProductImagePaths(productId);
 }

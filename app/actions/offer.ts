@@ -2,58 +2,105 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
 import { prisma } from "../lib/prisma";
 
-function requiredString(formData: FormData, fieldName: string) {
-  return String(formData.get(fieldName) ?? "").trim();
-}
-
-function optionalString(formData: FormData, fieldName: string) {
-  const value = String(formData.get(fieldName) ?? "").trim();
-
-  return value || null;
-}
-
-function requiredDecimal(formData: FormData, fieldName: string) {
+function requiredString(
+  formData: FormData,
+  fieldName: string,
+): string {
   const value = String(formData.get(fieldName) ?? "").trim();
 
   if (!value) {
     throw new Error(`${fieldName} is required.`);
   }
 
-  const number = Number(value);
+  return value;
+}
 
-  if (!Number.isFinite(number) || number < 0) {
+function optionalString(
+  formData: FormData,
+  fieldName: string,
+): string | null {
+  const value = String(formData.get(fieldName) ?? "").trim();
+
+  return value || null;
+}
+
+function parseRequiredPrice(
+  formData: FormData,
+  fieldName: string,
+): string {
+  const value = requiredString(formData, fieldName);
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue) || numberValue < 0) {
     throw new Error(
-      `${fieldName} must be a valid positive number.`
+      `${fieldName} must be a valid non-negative number.`,
     );
   }
 
   return value;
 }
 
-function optionalDecimal(formData: FormData, fieldName: string) {
-  const value = String(formData.get(fieldName) ?? "").trim();
+function parseOptionalPrice(
+  formData: FormData,
+  fieldName: string,
+): string | null {
+  const value = optionalString(formData, fieldName);
 
+  if (value === null) {
+    return null;
+  }
+
+  const numberValue = Number(value);
+
+  if (!Number.isFinite(numberValue) || numberValue < 0) {
+    throw new Error(
+      `${fieldName} must be a valid non-negative number.`,
+    );
+  }
+
+  return value;
+}
+
+function validateHttpUrl(
+  value: string,
+  fieldName: string,
+): string {
+  try {
+    const url = new URL(value);
+
+    if (
+      url.protocol !== "http:" &&
+      url.protocol !== "https:"
+    ) {
+      throw new Error();
+    }
+
+    return url.toString();
+  } catch {
+    throw new Error(
+      `${fieldName} must be a valid HTTP or HTTPS URL.`,
+    );
+  }
+}
+
+function validateOptionalHttpUrl(
+  value: string | null,
+  fieldName: string,
+): string | null {
   if (!value) {
     return null;
   }
 
-  const number = Number(value);
-
-  if (!Number.isFinite(number) || number < 0) {
-    throw new Error(
-      `${fieldName} must be a valid positive number.`
-    );
-  }
-
-  return value;
+  return validateHttpUrl(value, fieldName);
 }
 
 function calculateDiscountPercent(
   currentPrice: number,
-  originalPrice: number | null
-) {
+  originalPrice: number | null,
+): number | null {
   if (
     originalPrice === null ||
     originalPrice <= 0 ||
@@ -63,60 +110,46 @@ function calculateDiscountPercent(
   }
 
   return Math.round(
-    ((originalPrice - currentPrice) / originalPrice) * 100
+    ((originalPrice - currentPrice) / originalPrice) * 100,
   );
 }
 
 function readOfferFormData(formData: FormData) {
-  const retailerId = requiredString(formData, "retailerId");
-  const productUrl = requiredString(formData, "productUrl");
-  const affiliateUrl = optionalString(
+  const retailerId = requiredString(
     formData,
-    "affiliateUrl"
+    "retailerId",
+  );
+
+  const productUrl = validateHttpUrl(
+    requiredString(formData, "productUrl"),
+    "Product URL",
+  );
+
+  const affiliateUrl = validateOptionalHttpUrl(
+    optionalString(formData, "affiliateUrl"),
+    "Affiliate URL",
   );
 
   const currencyCode = requiredString(
     formData,
-    "currencyCode"
+    "currencyCode",
   ).toUpperCase();
-
-  const currentPriceValue = requiredDecimal(
-    formData,
-    "currentPrice"
-  );
-
-  const originalPriceValue = optionalDecimal(
-    formData,
-    "originalPrice"
-  );
-
-  const inStock = formData.get("inStock") === "true";
-
-  if (!retailerId || !productUrl || !currencyCode) {
-    throw new Error(
-      "Please complete all required offer fields."
-    );
-  }
 
   if (!/^[A-Z]{3}$/.test(currencyCode)) {
     throw new Error(
-      "Currency code must contain exactly three letters."
+      "Currency code must contain exactly three letters.",
     );
   }
 
-  try {
-    new URL(productUrl);
-  } catch {
-    throw new Error("Product URL must be a valid URL.");
-  }
+  const currentPriceValue = parseRequiredPrice(
+    formData,
+    "currentPrice",
+  );
 
-  if (affiliateUrl) {
-    try {
-      new URL(affiliateUrl);
-    } catch {
-      throw new Error("Affiliate URL must be a valid URL.");
-    }
-  }
+  const originalPriceValue = parseOptionalPrice(
+    formData,
+    "originalPrice",
+  );
 
   const currentPrice = Number(currentPriceValue);
 
@@ -125,10 +158,14 @@ function readOfferFormData(formData: FormData) {
       ? null
       : Number(originalPriceValue);
 
-  const discountPercent = calculateDiscountPercent(
-    currentPrice,
-    originalPrice
-  );
+  if (
+    originalPrice !== null &&
+    originalPrice < currentPrice
+  ) {
+    throw new Error(
+      "Original price cannot be lower than the current price.",
+    );
+  }
 
   return {
     retailerId,
@@ -137,9 +174,55 @@ function readOfferFormData(formData: FormData) {
     currencyCode,
     currentPriceValue,
     originalPriceValue,
-    discountPercent,
-    inStock,
+    discountPercent: calculateDiscountPercent(
+      currentPrice,
+      originalPrice,
+    ),
+    inStock: formData.get("inStock") === "true",
   };
+}
+
+async function getEditableProduct(productId: string) {
+  const product = await prisma.product.findFirst({
+    where: {
+      id: productId,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found.");
+  }
+
+  if (product.status === "ARCHIVED") {
+    throw new Error(
+      "Archived products cannot be modified.",
+    );
+  }
+
+  return product;
+}
+
+async function validateRetailer(retailerId: string) {
+  const retailer = await prisma.retailer.findUnique({
+    where: {
+      id: retailerId,
+    },
+    select: {
+      id: true,
+      active: true,
+    },
+  });
+
+  if (!retailer) {
+    throw new Error("Retailer not found.");
+  }
+
+  return retailer;
 }
 
 function revalidateOfferPages(productId: string) {
@@ -150,14 +233,26 @@ function revalidateOfferPages(productId: string) {
   revalidatePath(`/admin/products/${productId}/offers`);
 }
 
-export async function createOffer(formData: FormData) {
-  const productId = requiredString(formData, "productId");
+export async function createOffer(
+  formData: FormData,
+): Promise<never> {
+  const productId = requiredString(
+    formData,
+    "productId",
+  );
 
-  if (!productId) {
-    throw new Error("Product ID is required.");
-  }
+  await getEditableProduct(productId);
 
   const values = readOfferFormData(formData);
+  const retailer = await validateRetailer(
+    values.retailerId,
+  );
+
+  if (!retailer.active) {
+    throw new Error(
+      "An offer cannot be added for an inactive retailer.",
+    );
+  }
 
   const existingOffer = await prisma.offer.findUnique({
     where: {
@@ -173,7 +268,7 @@ export async function createOffer(formData: FormData) {
 
   if (existingOffer) {
     throw new Error(
-      "This retailer already has an offer for this product."
+      "This retailer already has an offer for this product.",
     );
   }
 
@@ -200,13 +295,13 @@ export async function createOffer(formData: FormData) {
 export async function updateOffer(
   offerId: string,
   productId: string,
-  formData: FormData
-) {
-  if (!offerId || !productId) {
-    throw new Error(
-      "Offer and product IDs are required."
-    );
+  formData: FormData,
+): Promise<never> {
+  if (!offerId) {
+    throw new Error("Offer ID is required.");
   }
+
+  await getEditableProduct(productId);
 
   const existingOffer = await prisma.offer.findFirst({
     where: {
@@ -215,6 +310,7 @@ export async function updateOffer(
     },
     select: {
       id: true,
+      retailerId: true,
     },
   });
 
@@ -223,6 +319,18 @@ export async function updateOffer(
   }
 
   const values = readOfferFormData(formData);
+  const retailer = await validateRetailer(
+    values.retailerId,
+  );
+
+  if (
+    !retailer.active &&
+    values.retailerId !== existingOffer.retailerId
+  ) {
+    throw new Error(
+      "The selected retailer is inactive.",
+    );
+  }
 
   const duplicateOffer = await prisma.offer.findFirst({
     where: {
@@ -239,13 +347,13 @@ export async function updateOffer(
 
   if (duplicateOffer) {
     throw new Error(
-      "This retailer already has another offer for this product."
+      "This retailer already has another offer for this product.",
     );
   }
 
   await prisma.offer.update({
     where: {
-      id: offerId,
+      id: existingOffer.id,
     },
     data: {
       retailerId: values.retailerId,
@@ -268,13 +376,13 @@ export async function updateOffer(
 export async function deleteOffer(
   productId: string,
   offerId: string,
-  _formData: FormData
-) {
-  if (!productId || !offerId) {
-    throw new Error(
-      "Offer and product IDs are required."
-    );
+  _formData: FormData,
+): Promise<never> {
+  if (!offerId) {
+    throw new Error("Offer ID is required.");
   }
+
+  await getEditableProduct(productId);
 
   const existingOffer = await prisma.offer.findFirst({
     where: {
@@ -292,7 +400,7 @@ export async function deleteOffer(
 
   await prisma.offer.delete({
     where: {
-      id: offerId,
+      id: existingOffer.id,
     },
   });
 

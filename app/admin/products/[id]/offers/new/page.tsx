@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import { createOffer } from "../../../../../actions/offer";
 import { prisma } from "../../../../../lib/prisma";
 import OfferForm from "../components/OfferForm";
@@ -16,13 +17,15 @@ export default async function NewProductOfferPage({
   const { id } = await params;
 
   const [product, retailers] = await Promise.all([
-    prisma.product.findUnique({
+    prisma.product.findFirst({
       where: {
         id,
+        deletedAt: null,
       },
       select: {
         id: true,
         fullName: true,
+        status: true,
         offers: {
           select: {
             retailerId: true,
@@ -49,15 +52,40 @@ export default async function NewProductOfferPage({
     notFound();
   }
 
+  const offersHref = `/admin/products/${product.id}/offers`;
+
+  if (product.status === "ARCHIVED") {
+    return (
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-6">
+          <Link
+            href={offersHref}
+            className="text-sm font-medium text-gray-600 hover:text-black"
+          >
+            ← Back to Offers
+          </Link>
+        </div>
+
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-8 text-amber-800">
+          <h2 className="text-xl font-semibold">
+            Product is archived
+          </h2>
+
+          <p className="mt-2">
+            New offers cannot be added until this product is restored.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const usedRetailerIds = new Set(
-    product.offers.map((offer) => offer.retailerId)
+    product.offers.map((offer) => offer.retailerId),
   );
 
   const availableRetailers = retailers.filter(
-    (retailer) => !usedRetailerIds.has(retailer.id)
+    (retailer) => !usedRetailerIds.has(retailer.id),
   );
-
-  const offersHref = `/admin/products/${product.id}/offers`;
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -71,10 +99,13 @@ export default async function NewProductOfferPage({
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold">Add Offer</h2>
+        <h2 className="text-2xl font-bold">
+          Add Offer
+        </h2>
 
         <p className="mt-2 text-gray-600">
-          Add a retailer price for {product.fullName}.
+          Add a retailer price for{" "}
+          <strong>{product.fullName}</strong>.
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import { prisma } from "../../../lib/prisma";
 
 type ProductOverviewPageProps = {
@@ -8,24 +9,56 @@ type ProductOverviewPageProps = {
   }>;
 };
 
+function ExternalLink({
+  href,
+  label,
+}: {
+  href: string | null;
+  label: string;
+}) {
+  if (!href) {
+    return <span className="text-gray-500">Not provided</span>;
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="break-all font-medium text-blue-600 hover:underline"
+    >
+      {label}
+    </a>
+  );
+}
+
 export default async function ProductOverviewPage({
   params,
 }: ProductOverviewPageProps) {
   const { id } = await params;
 
-  const product = await prisma.product.findUnique({
+  const product = await prisma.product.findFirst({
     where: {
       id,
+      deletedAt: null,
     },
     include: {
       brand: true,
       category: true,
+      productFamily: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       specification: true,
       _count: {
         select: {
           images: true,
           features: true,
           offers: true,
+          documents: true,
+          sources: true,
         },
       },
     },
@@ -53,7 +86,7 @@ export default async function ProductOverviewPage({
           <p className="mt-2 text-sm text-gray-500">
             {product.specification
               ? "Specification data has been added."
-              : "Add the machine specification data."}
+              : "Add the product specification data."}
           </p>
         </Link>
 
@@ -61,7 +94,9 @@ export default async function ProductOverviewPage({
           href={`/admin/products/${product.id}/features`}
           className="rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
         >
-          <p className="text-sm font-medium text-gray-500">Features</p>
+          <p className="text-sm font-medium text-gray-500">
+            Features
+          </p>
 
           <p className="mt-3 text-3xl font-bold">
             {product._count.features}
@@ -76,7 +111,9 @@ export default async function ProductOverviewPage({
           href={`/admin/products/${product.id}/images`}
           className="rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
         >
-          <p className="text-sm font-medium text-gray-500">Images</p>
+          <p className="text-sm font-medium text-gray-500">
+            Images
+          </p>
 
           <p className="mt-3 text-3xl font-bold">
             {product._count.images}
@@ -91,7 +128,9 @@ export default async function ProductOverviewPage({
           href={`/admin/products/${product.id}/offers`}
           className="rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
         >
-          <p className="text-sm font-medium text-gray-500">Offers</p>
+          <p className="text-sm font-medium text-gray-500">
+            Offers
+          </p>
 
           <p className="mt-3 text-3xl font-bold">
             {product._count.offers}
@@ -111,7 +150,7 @@ export default async function ProductOverviewPage({
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-              Core factual catalog information for this coffee machine.
+              Core factual catalog information for this product.
             </p>
           </div>
 
@@ -128,12 +167,18 @@ export default async function ProductOverviewPage({
             <dt className="text-sm font-medium text-gray-500">
               Product Name
             </dt>
-            <dd className="mt-1 font-medium">{product.fullName}</dd>
+            <dd className="mt-1 font-medium">
+              {product.fullName}
+            </dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Brand</dt>
-            <dd className="mt-1 font-medium">{product.brand.name}</dd>
+            <dt className="text-sm font-medium text-gray-500">
+              Brand
+            </dt>
+            <dd className="mt-1 font-medium">
+              {product.brand.name}
+            </dd>
           </div>
 
           <div>
@@ -146,8 +191,21 @@ export default async function ProductOverviewPage({
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Model</dt>
-            <dd className="mt-1 font-medium">{product.model}</dd>
+            <dt className="text-sm font-medium text-gray-500">
+              Product Family
+            </dt>
+            <dd className="mt-1 font-medium">
+              {product.productFamily?.name ?? "Not assigned"}
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Model
+            </dt>
+            <dd className="mt-1 font-medium">
+              {product.model}
+            </dd>
           </div>
 
           <div>
@@ -161,13 +219,26 @@ export default async function ProductOverviewPage({
 
           <div>
             <dt className="text-sm font-medium text-gray-500">
-              Status
+              Release Year
             </dt>
-            <dd className="mt-1 font-medium">{product.status}</dd>
+            <dd className="mt-1 font-medium">
+              {product.releaseYear ?? "Not provided"}
+            </dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Slug</dt>
+            <dt className="text-sm font-medium text-gray-500">
+              Status
+            </dt>
+            <dd className="mt-1 font-medium">
+              {product.status}
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Slug
+            </dt>
             <dd className="mt-1 break-all font-medium">
               {product.slug}
             </dd>
@@ -181,6 +252,60 @@ export default async function ProductOverviewPage({
               {product.lastVerifiedAt
                 ? product.lastVerifiedAt.toLocaleDateString()
                 : "Not verified yet"}
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Official Product Page
+            </dt>
+            <dd className="mt-1">
+              <ExternalLink
+                href={product.officialProductUrl}
+                label="Open official page"
+              />
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Manual
+            </dt>
+            <dd className="mt-1">
+              <ExternalLink
+                href={product.manualUrl}
+                label="Open manual"
+              />
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Warranty
+            </dt>
+            <dd className="mt-1">
+              <ExternalLink
+                href={product.warrantyUrl}
+                label="Open warranty information"
+              />
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Documents
+            </dt>
+            <dd className="mt-1 font-medium">
+              {product._count.documents}
+            </dd>
+          </div>
+
+          <div>
+            <dt className="text-sm font-medium text-gray-500">
+              Sources
+            </dt>
+            <dd className="mt-1 font-medium">
+              {product._count.sources}
             </dd>
           </div>
         </dl>

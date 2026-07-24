@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
 import { prisma } from "../../../lib/prisma";
 
 type ProductWorkspaceLayoutProps = {
@@ -9,9 +10,19 @@ type ProductWorkspaceLayoutProps = {
   }>;
 };
 
-function getStatusClasses(status: string) {
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+}
+
+function getStatusClasses(status: string): string {
   if (status === "PUBLISHED") {
     return "bg-green-100 text-green-700";
+  }
+
+  if (status === "REVIEW") {
+    return "bg-blue-100 text-blue-700";
   }
 
   if (status === "ARCHIVED") {
@@ -27,9 +38,22 @@ export default async function ProductWorkspaceLayout({
 }: ProductWorkspaceLayoutProps) {
   const { id } = await params;
 
-  const product = await prisma.product.findUnique({
+  /*
+   * Prevent static product routes such as /products/new
+   * from being sent to Prisma as UUID values.
+   */
+  if (id === "new") {
+    return children;
+  }
+
+  if (!isUuid(id)) {
+    notFound();
+  }
+
+  const product = await prisma.product.findFirst({
     where: {
       id,
+      deletedAt: null,
     },
     select: {
       id: true,
@@ -91,11 +115,13 @@ export default async function ProductWorkspaceLayout({
       <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl font-bold">{product.fullName}</h1>
+            <h1 className="text-3xl font-bold">
+              {product.fullName}
+            </h1>
 
             <span
               className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusClasses(
-                product.status
+                product.status,
               )}`}
             >
               {product.status}

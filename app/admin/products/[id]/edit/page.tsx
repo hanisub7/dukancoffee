@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
-import { prisma } from "../../../../lib/prisma";
+
 import { updateProduct } from "../../../../actions/product";
+import { prisma } from "../../../../lib/prisma";
 
 type EditProductPageProps = {
   params: Promise<{
@@ -13,50 +14,131 @@ export default async function EditProductPage({
 }: EditProductPageProps) {
   const { id } = await params;
 
-  const [product, brands, categories] = await Promise.all([
-    prisma.product.findUnique({
-      where: {
-        id,
-      },
-    }),
-    prisma.brand.findMany({
-      where: {
-        active: true,
-        deletedAt: null,
-      },
-      orderBy: {
-        name: "asc",
-      },
-    }),
-    prisma.category.findMany({
-      where: {
-        active: true,
-        deletedAt: null,
-      },
-      orderBy: [
-        {
-          sortOrder: "asc",
-        },
-        {
-          nameEn: "asc",
-        },
-      ],
-    }),
-  ]);
+  const product = await prisma.product.findFirst({
+    where: {
+      id,
+      deletedAt: null,
+    },
+  });
 
   if (!product) {
     notFound();
   }
 
-  const updateProductWithId = updateProduct.bind(null, product.id);
+  const [brands, categories, productFamilies] =
+    await Promise.all([
+      prisma.brand.findMany({
+        where: {
+          OR: [
+            {
+              active: true,
+              deletedAt: null,
+            },
+            {
+              id: product.brandId,
+            },
+          ],
+        },
+        orderBy: {
+          name: "asc",
+        },
+        select: {
+          id: true,
+          name: true,
+          active: true,
+        },
+      }),
+
+      prisma.category.findMany({
+        where: {
+          OR: [
+            {
+              active: true,
+              deletedAt: null,
+            },
+            {
+              id: product.categoryId,
+            },
+          ],
+        },
+        orderBy: [
+          {
+            sortOrder: "asc",
+          },
+          {
+            nameEn: "asc",
+          },
+        ],
+        select: {
+          id: true,
+          nameEn: true,
+          active: true,
+        },
+      }),
+
+      prisma.productFamily.findMany({
+        where: {
+          OR: [
+            {
+              deletedAt: null,
+              brand: {
+                active: true,
+                deletedAt: null,
+              },
+              category: {
+                active: true,
+                deletedAt: null,
+              },
+            },
+            {
+              id: product.productFamilyId,
+            },
+          ],
+        },
+        orderBy: [
+          {
+            brand: {
+              name: "asc",
+            },
+          },
+          {
+            name: "asc",
+          },
+        ],
+        select: {
+          id: true,
+          name: true,
+          brandId: true,
+          categoryId: true,
+          brand: {
+            select: {
+              name: true,
+            },
+          },
+          category: {
+            select: {
+              nameEn: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+  const updateProductWithId = updateProduct.bind(
+    null,
+    product.id,
+  );
 
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Edit Product</h1>
+        <h1 className="text-3xl font-bold">
+          Edit Product Variant
+        </h1>
 
         <p className="mt-2 text-gray-600">
-          Update the product information and publication status.
+          Update this exact product variant, its product family,
+          and publication status.
         </p>
       </div>
 
@@ -70,7 +152,7 @@ export default async function EditProductPage({
               htmlFor="fullName"
               className="mb-2 block font-medium"
             >
-              Product Name
+              Full Product Name
             </label>
 
             <input
@@ -120,6 +202,25 @@ export default async function EditProductPage({
 
           <div>
             <label
+              htmlFor="releaseYear"
+              className="mb-2 block font-medium"
+            >
+              Release Year
+            </label>
+
+            <input
+              id="releaseYear"
+              name="releaseYear"
+              type="number"
+              min="1900"
+              max={new Date().getFullYear() + 1}
+              defaultValue={product.releaseYear ?? ""}
+              className="w-full rounded-lg border p-3"
+            />
+          </div>
+
+          <div>
+            <label
               htmlFor="brandId"
               className="mb-2 block font-medium"
             >
@@ -136,6 +237,7 @@ export default async function EditProductPage({
               {brands.map((brand) => (
                 <option key={brand.id} value={brand.id}>
                   {brand.name}
+                  {!brand.active ? " — Inactive" : ""}
                 </option>
               ))}
             </select>
@@ -157,11 +259,47 @@ export default async function EditProductPage({
               className="w-full rounded-lg border p-3"
             >
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
+                <option
+                  key={category.id}
+                  value={category.id}
+                >
                   {category.nameEn}
+                  {!category.active ? " — Inactive" : ""}
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <label
+              htmlFor="productFamilyId"
+              className="mb-2 block font-medium"
+            >
+              Product Family
+            </label>
+
+            <select
+              id="productFamilyId"
+              name="productFamilyId"
+              required
+              defaultValue={product.productFamilyId}
+              className="w-full rounded-lg border p-3"
+            >
+              {productFamilies.map((family) => (
+                <option
+                  key={family.id}
+                  value={family.id}
+                >
+                  {family.brand.name} — {family.name} —{" "}
+                  {family.category.nameEn}
+                </option>
+              ))}
+            </select>
+
+            <p className="mt-2 text-sm text-gray-500">
+              A product family is required. It must match the
+              selected brand and category.
+            </p>
           </div>
 
           <div>
@@ -180,9 +318,64 @@ export default async function EditProductPage({
               className="w-full rounded-lg border p-3"
             >
               <option value="DRAFT">Draft</option>
+              <option value="REVIEW">Review</option>
               <option value="PUBLISHED">Published</option>
               <option value="ARCHIVED">Archived</option>
             </select>
+          </div>
+
+          <div className="md:col-span-2">
+            <label
+              htmlFor="officialProductUrl"
+              className="mb-2 block font-medium"
+            >
+              Official Product URL
+            </label>
+
+            <input
+              id="officialProductUrl"
+              name="officialProductUrl"
+              type="url"
+              defaultValue={product.officialProductUrl ?? ""}
+              className="w-full rounded-lg border p-3"
+              placeholder="https://..."
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="manualUrl"
+              className="mb-2 block font-medium"
+            >
+              Manual URL
+            </label>
+
+            <input
+              id="manualUrl"
+              name="manualUrl"
+              type="url"
+              defaultValue={product.manualUrl ?? ""}
+              className="w-full rounded-lg border p-3"
+              placeholder="https://..."
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="warrantyUrl"
+              className="mb-2 block font-medium"
+            >
+              Warranty URL
+            </label>
+
+            <input
+              id="warrantyUrl"
+              name="warrantyUrl"
+              type="url"
+              defaultValue={product.warrantyUrl ?? ""}
+              className="w-full rounded-lg border p-3"
+              placeholder="https://..."
+            />
           </div>
         </div>
 
