@@ -56,6 +56,7 @@ export default async function ProductOverviewPage({
         select: {
           images: true,
           features: true,
+          boxContents: true,
           offers: true,
           documents: true,
           sources: true,
@@ -104,6 +105,23 @@ export default async function ProductOverviewPage({
 
           <p className="mt-2 text-sm text-gray-500">
             Factual manufacturer features.
+          </p>
+        </Link>
+
+        <Link
+          href={`/admin/products/${product.id}/box-contents`}
+          className="rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
+        >
+          <p className="text-sm font-medium text-gray-500">
+            Box Contents
+          </p>
+
+          <p className="mt-3 text-3xl font-bold">
+            {product._count.boxContents}
+          </p>
+
+          <p className="mt-2 text-sm text-gray-500">
+            Items included in the product box.
           </p>
         </Link>
 

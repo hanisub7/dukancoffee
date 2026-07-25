@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,48 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dukancoffee.com"),
-  title: {
-    default: "DukanCoffee | مقارنة أسعار ماكينات القهوة",
-    template: "%s | DukanCoffee",
-  },
-  description:
-    "قارن أسعار ماكينات القهوة في السعودية، وتابع تاريخ الأسعار والمواصفات والعروض المتاحة من المتاجر.",
-  applicationName: "DukanCoffee",
-  keywords: [
-    "ماكينات القهوة",
-    "مقارنة أسعار ماكينات القهوة",
-    "ماكينات إسبريسو",
-    "ماكينات قهوة أوتوماتيكية",
-    "مطاحن القهوة",
-    "السعودية",
-    "DukanCoffee",
-  ],
-  authors: [{ name: "DukanCoffee" }],
-  creator: "DukanCoffee",
-  publisher: "DukanCoffee",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    locale: "ar_SA",
-    url: "/",
-    siteName: "DukanCoffee",
-    title: "DukanCoffee | مقارنة أسعار ماكينات القهوة",
-    description:
-      "قارن أسعار ماكينات القهوة في السعودية وتابع تغير الأسعار قبل الشراء.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "DukanCoffee | مقارنة أسعار ماكينات القهوة",
-    description:
-      "قارن أسعار ماكينات القهوة في السعودية وتابع تغير الأسعار قبل الشراء.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  title: "DukanCoffee",
+  description: "قارن أسعار آلات القهوة وتتبع تغيرها.",
 };
 
 export default function RootLayout({
@@ -63,12 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="ar"
-      dir="rtl"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full">{children}</body>
+    <html lang="ar" dir="rtl">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-neutral-900`}
+      >
+        <SiteHeader />
+
+        <main className="min-h-[calc(100vh-72px)]">{children}</main>
+      </body>
     </html>
   );
 }
