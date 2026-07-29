@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { prisma } from "@/app/lib/prisma";
 
+type AdminRole = "SUPER_ADMIN" | "ADMIN" | "EDITOR";
+
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
@@ -13,6 +15,49 @@ const credentialsSchema = z.object({
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
+  },
+
+pages: {
+  signIn: "/login",
+},
+
+  callbacks: {
+  authorized({ auth, request }) {
+    const isAdminRoute =
+      request.nextUrl.pathname.startsWith("/admin");
+
+    if (isAdminRoute) {
+      return Boolean(auth?.user);
+    }
+
+    return true;
+  },
+
+    async jwt({ token, user }) {
+      if (user) {
+        const authenticatedUser = user as typeof user & {
+          role: AdminRole;
+        };
+
+        token.role = authenticatedUser.role;
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        const sessionUser = session.user as typeof session.user & {
+          id: string;
+          role: AdminRole;
+        };
+
+        sessionUser.id = token.sub ?? "";
+        sessionUser.role = token.role as AdminRole;
+      }
+
+      return session;
+    },
   },
 
   providers: [
@@ -63,6 +108,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: adminUser.id,
           email: adminUser.email,
           name: adminUser.fullName,
+          role: adminUser.role,
         };
       },
     }),

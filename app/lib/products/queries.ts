@@ -109,13 +109,13 @@ function getPriceMovementText(
 ): string | null {
   switch (movement) {
     case "down":
-      return "Lower than previous price";
+      return "أقل من السعر السابق";
 
     case "up":
-      return "Higher than previous price";
+      return "أعلى من السعر السابق";
 
     case "same":
-      return "No price change";
+      return "لا يوجد تغير في السعر";
 
     default:
       return null;

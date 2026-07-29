@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { prisma } from "@/app/lib/prisma";
+import PriceHistoryChart from "@/components/products/PriceHistoryChart";
 
 export const dynamic = "force-dynamic";
 
@@ -366,6 +367,18 @@ async function getProduct(slug: string) {
               slug: true,
             },
           },
+        },
+      },
+
+      boxContents: {
+        orderBy: {
+          createdAt: "asc",
+        },
+
+        select: {
+          id: true,
+          itemName: true,
+          quantity: true,
         },
       },
 
@@ -975,34 +988,16 @@ export default async function ProductPage({
               </p>
             </div>
 
-            <div className="mt-7 overflow-hidden rounded-2xl border border-black/10 bg-white">
-              {bestOffer.priceHistory.map(
-                (history, index) => (
-                  <div
-                    key={history.id}
-                    className={`flex items-center justify-between gap-5 px-5 py-4 sm:px-6 ${
-                      index > 0
-                        ? "border-t border-black/10"
-                        : ""
-                    }`}
-                  >
-                    <time className="text-sm text-black/50">
-                      {formatDate(history.checkedAt)}
-                    </time>
-
-                    <p
-                      dir="ltr"
-                      className="text-left text-base font-semibold text-black"
-                    >
-                      {formatPrice(
-                        history.price,
-                        bestOffer.currencyCode,
-                      )}
-                    </p>
-                  </div>
-                ),
-              )}
-            </div>
+<div className="mt-7 rounded-2xl border border-black/10 bg-white p-6">
+  <PriceHistoryChart
+    currencyCode={bestOffer.currencyCode}
+    data={bestOffer.priceHistory.map((item) => ({
+      id: item.id,
+      price: decimalToNumber(item.price),
+      checkedAt: item.checkedAt.toISOString(),
+    }))}
+  />
+</div>
           </div>
         </section>
       ) : null}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 
@@ -245,172 +246,198 @@ async function getHomepageData() {
     },
   };
 
-  const [products, recentOffers, brands] = await Promise.all([
-    prisma.product.findMany({
-      where: publishedProductWhere,
-      orderBy: {
-        updatedAt: "desc",
-      },
-      take: 12,
-      select: {
-        id: true,
-        slug: true,
-        fullName: true,
-        model: true,
-        updatedAt: true,
-        brand: {
-          select: {
-            name: true,
-            slug: true,
-          },
-        },
-        category: {
-          select: {
-            nameAr: true,
-            slug: true,
-          },
-        },
-        images: {
-          where: {
-            imageType: "MAIN",
-          },
-          orderBy: {
-            sortOrder: "asc",
-          },
-          take: 1,
-          select: {
-            url: true,
-            altText: true,
-          },
-        },
-        offers: {
-          where: {
-            inStock: true,
-            retailer: {
-              active: true,
-              deletedAt: null,
-              country: {
-                code: "SA",
-                enabled: true,
-              },
-            },
-          },
-          orderBy: {
-            currentPrice: "asc",
-          },
-          take: 1,
-          select: {
-            id: true,
-            currentPrice: true,
-            currencyCode: true,
-            checkedAt: true,
-            retailer: {
-              select: {
-                name: true,
-                slug: true,
-              },
-            },
-            priceHistory: {
-              orderBy: {
-                checkedAt: "desc",
-              },
-              take: 2,
-              select: {
-                price: true,
-                checkedAt: true,
-              },
-            },
-          },
+  const [
+    products,
+    recentOffers,
+    brands,
+    totalProducts,
+    totalOffers,
+  ] = await Promise.all([
+  prisma.product.findMany({
+    where: publishedProductWhere,
+    orderBy: {
+      updatedAt: "desc",
+    },
+    take: 12,
+    select: {
+      id: true,
+      slug: true,
+      fullName: true,
+      model: true,
+      updatedAt: true,
+      brand: {
+        select: {
+          name: true,
+          slug: true,
         },
       },
-    }),
+      category: {
+        select: {
+          nameAr: true,
+          slug: true,
+        },
+      },
+      images: {
+        where: {
+          imageType: "MAIN",
+        },
+        orderBy: {
+          sortOrder: "asc",
+        },
+        take: 1,
+        select: {
+          url: true,
+          altText: true,
+        },
+      },
+      offers: {
+        where: {
+          inStock: true,
+          retailer: {
+            active: true,
+            deletedAt: null,
+            country: {
+              code: "SA",
+              enabled: true,
+            },
+          },
+        },
+        orderBy: {
+          currentPrice: "asc",
+        },
+        take: 1,
+        select: {
+          id: true,
+          currentPrice: true,
+          currencyCode: true,
+          checkedAt: true,
+          retailer: {
+            select: {
+              name: true,
+              slug: true,
+            },
+          },
+          priceHistory: {
+            orderBy: {
+              checkedAt: "desc",
+            },
+            take: 2,
+            select: {
+              price: true,
+              checkedAt: true,
+            },
+          },
+        },
+      },
+    },
+  }),
 
-    prisma.offer.findMany({
-      where: {
-        inStock: true,
-        retailer: {
-          active: true,
-          deletedAt: null,
-          country: {
-            code: "SA",
-            enabled: true,
-          },
-        },
-        product: publishedProductWhere,
-        priceHistory: {
-          some: {},
-        },
-      },
-      orderBy: {
-        checkedAt: "desc",
-      },
-      take: 24,
-      select: {
-        id: true,
-        currentPrice: true,
-        currencyCode: true,
-        checkedAt: true,
-        product: {
-          select: {
-            slug: true,
-            fullName: true,
-            brand: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        retailer: {
-          select: {
-            name: true,
-          },
-        },
-        priceHistory: {
-          orderBy: {
-            checkedAt: "desc",
-          },
-          take: 2,
-          select: {
-            price: true,
-            checkedAt: true,
-          },
-        },
-      },
-    }),
-
-    prisma.brand.findMany({
-      where: {
+  prisma.offer.findMany({
+    where: {
+      inStock: true,
+      retailer: {
         active: true,
         deletedAt: null,
-        products: {
-          some: {
-            status: "PUBLISHED",
-            deletedAt: null,
-          },
+        country: {
+          code: "SA",
+          enabled: true,
         },
       },
-      orderBy: {
-        name: "asc",
+      product: publishedProductWhere,
+      priceHistory: {
+        some: {},
       },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        logoUrl: true,
-        _count: {
-          select: {
-            products: {
-              where: {
-                status: "PUBLISHED",
-                deletedAt: null,
-              },
+    },
+    orderBy: {
+      checkedAt: "desc",
+    },
+    take: 24,
+    select: {
+      id: true,
+      currentPrice: true,
+      currencyCode: true,
+      checkedAt: true,
+      product: {
+        select: {
+          slug: true,
+          fullName: true,
+          brand: {
+            select: {
+              name: true,
             },
           },
         },
       },
-    }),
-  ]);
+      retailer: {
+        select: {
+          name: true,
+        },
+      },
+      priceHistory: {
+        orderBy: {
+          checkedAt: "desc",
+        },
+        take: 2,
+        select: {
+          price: true,
+          checkedAt: true,
+        },
+      },
+    },
+  }),
+
+  prisma.brand.findMany({
+    where: {
+      active: true,
+      deletedAt: null,
+      products: {
+        some: {
+          status: "PUBLISHED",
+          deletedAt: null,
+        },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      logoUrl: true,
+      _count: {
+        select: {
+          products: {
+            where: {
+              status: "PUBLISHED",
+              deletedAt: null,
+            },
+          },
+        },
+      },
+    },
+  }),
+
+  prisma.product.count({
+    where: publishedProductWhere,
+  }),
+
+  prisma.offer.count({
+    where: {
+      inStock: true,
+      retailer: {
+        active: true,
+        deletedAt: null,
+        country: {
+          code: "SA",
+          enabled: true,
+        },
+      },
+      product: publishedProductWhere,
+    },
+  }),
+]);
+
 
   const productsWithOffers = products.filter(
     (product) => product.offers.length > 0,
@@ -458,6 +485,11 @@ async function getHomepageData() {
     popularProducts,
     latestPriceDrops,
     popularBrands,
+    statistics: {
+      products: totalProducts,
+      brands: brands.length,
+      offers: totalOffers,
+    },
   };
 }
 
@@ -488,6 +520,7 @@ export default async function Home() {
     popularProducts,
     latestPriceDrops,
     popularBrands,
+    statistics,
   } = await getHomepageData();
 
   const heroOffer = heroProduct?.offers[0] ?? null;
@@ -501,46 +534,28 @@ export default async function Home() {
     <main dir="rtl" className="min-h-screen bg-background text-text-primary">
       <header className="border-b border-border bg-white">
         <div className="site-container flex min-h-20 items-center justify-between gap-6">
-          <Link
-            href="/"
-            className="flex shrink-0 items-center gap-3"
-            aria-label="DukanCoffee"
-          >
-            <span
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand"
-              aria-hidden="true"
-            >
-              <svg viewBox="0 0 40 40" className="h-7 w-7" fill="none">
-                <path
-                  d="M10 7H19.5C27.5 7 33 12.2 33 20C33 27.8 27.5 33 19.5 33H10V7Z"
-                  stroke="white"
-                  strokeWidth="3.2"
-                  strokeLinejoin="round"
-                />
+        <Link
+         href="/"
+         className="flex shrink-0 items-center gap-1"
+         aria-label="DukanCoffee"
+>
+       <Image
+  src="/logo-dc-orange.png"
+  alt="DukanCoffee"
+  width={64}
+height={64}
+className="h-11 w-auto"
+  priority
+/>
 
-                <path
-                  d="M20.2 13.4C24.3 16.4 24.8 22.8 20 27.1C16.2 23.9 15.8 17.6 20.2 13.4Z"
-                  fill="white"
-                />
-
-                <path
-                  d="M20 16.6C18.7 19.4 18.7 22.1 20.1 24.7"
-                  stroke="#C7762B"
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-
-            <span
-              dir="ltr"
-              className="text-lg font-semibold tracking-tight text-stone-900"
-            >
-              DukanCoffee
-            </span>
-          </Link>
-
-          <nav
+<span
+  dir="ltr"
+  className="-mr-0 text-2xl font-bold text-orange-500"
+>
+  DukanCoffee
+</span>
+            </Link>
+            <nav
             className="hidden items-center gap-8 text-sm font-medium text-text-secondary md:flex"
             aria-label="التنقل الرئيسي"
           >
@@ -567,156 +582,233 @@ export default async function Home() {
         </div>
       </header>
 
-      <section className="border-b border-border bg-white">
-        <div className="site-container grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-28">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold text-brand">
-              تتبع أسعار ماكينات القهوة في السعودية
-            </p>
+      <section className="border-b border-border bg-[#fffaf4]">
+  <div className="site-container grid items-center gap-12 py-14 sm:py-18 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
+    <div className="max-w-3xl">
+      <p className="inline-flex rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
+        مقارنة أسعار ماكينات القهوة
+      </p>
 
-            <h1 className="mt-5 text-4xl font-semibold leading-[1.2] tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
-              تابع أسعار ماكينات القهوة.
-              <span className="mt-2 block text-brand">
-                واشترِ في الوقت المناسب.
-              </span>
-            </h1>
+      <h1 className="mt-6 text-4xl font-bold leading-[1.25] tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
+        اعثر على ماكينة القهوة
+        <span className="mt-2 block text-brand">
+          المناسبة بأفضل سعر
+        </span>
+      </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-text-secondary">
-              اكتشف السعر الحالي، راجع تاريخ تغير السعر، وقارن المعلومات
-              الأساسية قبل الانتقال للشراء من Amazon.sa.
-            </p>
+      <p className="mt-6 max-w-2xl text-base leading-8 text-text-secondary sm:text-lg">
+        قارن الأسعار الحالية، تابع تاريخ تغير السعر، وتعرّف على مواصفات
+        الماكينة قبل الانتقال إلى المتجر.
+      </p>
 
-            <form action="/products" method="get" className="mt-9 max-w-2xl">
-              <label htmlFor="homepage-search" className="sr-only">
-                ابحث عن ماكينة قهوة
-              </label>
+      <form action="/products" method="get" className="mt-8 max-w-2xl">
+        <label htmlFor="homepage-search" className="sr-only">
+          ابحث عن ماكينة قهوة
+        </label>
 
-              <div className="flex items-center rounded-2xl border border-border bg-white p-2 shadow-card">
-                <div className="flex min-w-0 flex-1 items-center gap-3 px-3">
-                  <SearchIcon className="h-5 w-5 shrink-0 text-text-muted" />
+        <div className="flex items-center rounded-2xl border border-border bg-white p-2 shadow-card">
+          <div className="flex min-w-0 flex-1 items-center gap-3 px-3">
+            <SearchIcon className="h-5 w-5 shrink-0 text-text-muted" />
 
-                  <input
-                    id="homepage-search"
-                    type="search"
-                    name="q"
-                    placeholder="ابحث عن ماكينة أو علامة تجارية"
-                    className="min-h-12 w-full border-0 bg-transparent text-base text-text-primary outline-none placeholder:text-text-muted"
-                  />
+            <input
+              id="homepage-search"
+              type="search"
+              name="q"
+              placeholder="ابحث عن ماكينة أو علامة تجارية"
+              className="min-h-12 w-full border-0 bg-transparent text-base text-text-primary outline-none placeholder:text-text-muted"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="min-h-12 shrink-0 rounded-xl bg-brand px-7 text-sm font-semibold text-white transition hover:bg-brand-hover"
+          >
+            بحث
+          </button>
+        </div>
+      </form>
+
+      <div className="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm text-text-muted">
+        <span className="flex items-center gap-2">
+          <span className="text-brand" aria-hidden="true">
+            ✓
+          </span>
+          مقارنة الأسعار
+        </span>
+
+        <span className="flex items-center gap-2">
+          <span className="text-brand" aria-hidden="true">
+            ✓
+          </span>
+          تاريخ تغير السعر
+        </span>
+
+        <span className="flex items-center gap-2">
+          <span className="text-brand" aria-hidden="true">
+            ✓
+          </span>
+          معلومات واضحة
+        </span>
+      </div>
+    </div>
+
+    <div className="mx-auto w-full max-w-lg">
+      <div className="overflow-hidden rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-950/5 sm:p-8">
+        <div className="flex h-[300px] items-center justify-center rounded-[1.5rem] bg-[#fff7ed] p-6">
+          <ProductVisual
+            imageUrl={heroImage?.url}
+            alt={
+              heroImage?.altText ??
+              heroProduct?.fullName ??
+              "ماكينة قهوة"
+            }
+          />
+        </div>
+
+        <div className="pt-6">
+          {heroProduct ? (
+            <>
+              <p className="text-sm font-medium text-brand">
+                ماكينة مختارة
+              </p>
+
+              <div className="mt-3 flex items-end justify-between gap-5">
+                <div className="min-w-0">
+                  <p
+                    dir="ltr"
+                    className="truncate text-left text-lg font-semibold text-stone-900"
+                  >
+                    {heroProduct.fullName}
+                  </p>
+
+                  <p className="mt-1 text-sm text-text-muted">
+                    {heroProduct.category.nameAr}
+                  </p>
                 </div>
 
-                <button
-                  type="submit"
-                  className="min-h-12 shrink-0 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover"
-                >
-                  بحث
-                </button>
-              </div>
-            </form>
-
-            <div className="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm text-text-muted">
-              <span className="flex items-center gap-2">
-                <span aria-hidden="true">✓</span>
-                تاريخ السعر
-              </span>
-
-              <span className="flex items-center gap-2">
-                <span aria-hidden="true">✓</span>
-                أسعار Amazon.sa
-              </span>
-
-              <span className="flex items-center gap-2">
-                <span aria-hidden="true">✓</span>
-                جاهز لدول الخليج
-              </span>
-            </div>
-          </div>
-
-          <div className="mx-auto w-full max-w-lg">
-            <div className="rounded-[2rem] border border-border bg-surface-soft p-7 sm:p-10">
-              <div className="flex h-[320px] items-center justify-center">
-                <ProductVisual
-                  imageUrl={heroImage?.url}
-                  alt={
-                    heroImage?.altText ??
-                    heroProduct?.fullName ??
-                    "ماكينة قهوة"
-                  }
-                />
-              </div>
-
-              <div className="mt-4 border-t border-border pt-6">
-                {heroProduct ? (
-                  <>
-                    <p className="text-sm text-text-muted">ماكينة مختارة</p>
-
-                    <div className="mt-2 flex items-end justify-between gap-5">
-                      <div>
-                        <p
-                          dir="ltr"
-                          className="text-left text-lg font-semibold text-stone-900"
-                        >
-                          {heroProduct.fullName}
-                        </p>
-
-                        <p className="mt-1 text-sm text-text-muted">
-                          {heroProduct.category.nameAr}
-                        </p>
-                      </div>
-
-                      {heroOffer ? (
-                        <div className="shrink-0 text-left">
-                          <p className="text-xs text-text-muted">
-                            السعر الحالي
-                          </p>
-
-                          <p className="mt-1 text-xl font-semibold text-brand">
-                            {formatPrice(
-                              heroOffer.currentPrice,
-                              heroOffer.currencyCode,
-                            )}
-                          </p>
-                        </div>
-                      ) : null}
-                    </div>
-
-                    {heroMovement ? (
-                      <p className="price-movement mt-4">
-                        <span
-                          className="price-movement-arrow"
-                          aria-hidden="true"
-                        >
-                          {heroMovement.symbol}
-                        </span>
-
-                        {heroMovement.text}
-                      </p>
-                    ) : null}
-
-                    <Link
-                      href={`/products/${heroProduct.slug}`}
-                      className="mt-5 inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand-hover"
-                    >
-                      عرض تفاصيل الماكينة
-                    </Link>
-                  </>
-                ) : (
-                  <div className="text-center">
-                    <p className="font-semibold text-stone-900">
-                      لا توجد منتجات منشورة بعد
+                {heroOffer ? (
+                  <div className="shrink-0 text-left">
+                    <p className="text-xs text-text-muted">
+                      السعر الحالي
                     </p>
 
-                    <p className="mt-2 text-sm leading-6 text-text-muted">
-                      ستظهر الماكينة المختارة هنا تلقائيًا بعد نشر أول منتج
-                      وإضافة سعر له.
+                    <p className="mt-1 text-xl font-bold text-brand">
+                      {formatPrice(
+                        heroOffer.currentPrice,
+                        heroOffer.currencyCode,
+                      )}
                     </p>
                   </div>
-                )}
+                ) : null}
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
+              {heroMovement ? (
+                <p className="price-movement mt-4">
+                  <span
+                    className="price-movement-arrow"
+                    aria-hidden="true"
+                  >
+                    {heroMovement.symbol}
+                  </span>
+
+                  {heroMovement.text}
+                </p>
+              ) : null}
+
+              <Link
+                href={`/products/${heroProduct.slug}`}
+                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand-hover"
+              >
+                عرض تفاصيل الماكينة
+              </Link>
+            </>
+          ) : (
+            <div className="py-3 text-center">
+              <p className="font-semibold text-stone-900">
+                لا توجد منتجات منشورة بعد
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-text-muted">
+                ستظهر الماكينة المختارة هنا تلقائيًا بعد نشر أول منتج
+                وإضافة سعر له.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section className="border-b border-border bg-surface-soft">
+  <div className="site-container py-10 sm:py-12">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
+          ☕
+        </div>
+
+        <p className="mt-5 text-3xl font-bold text-stone-900">
+          {statistics.products}
+        </p>
+
+        <p className="mt-2 text-sm font-medium text-text-secondary">
+          ماكينة قهوة
+        </p>
+
+        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
+      </article>
+
+      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
+          🏷️
+        </div>
+
+        <p className="mt-5 text-3xl font-bold text-stone-900">
+          {statistics.brands}
+        </p>
+
+        <p className="mt-2 text-sm font-medium text-text-secondary">
+          علامة تجارية
+        </p>
+
+        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
+      </article>
+
+      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
+          💰
+        </div>
+
+        <p className="mt-5 text-3xl font-bold text-stone-900">
+          {statistics.offers}
+        </p>
+
+        <p className="mt-2 text-sm font-medium text-text-secondary">
+          عرض متاح
+        </p>
+
+        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
+      </article>
+
+      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
+          📈
+        </div>
+
+        <p className="mt-5 text-xl font-bold text-stone-900">
+          تحديث مستمر
+        </p>
+
+        <p className="mt-2 text-sm font-medium text-text-secondary">
+          لأسعار ماكينات القهوة
+        </p>
+
+        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
+      </article>
+    </div>
+  </div>
+</section>
       <section className="site-container py-16 sm:py-20 lg:py-24">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>

@@ -158,6 +158,39 @@ export default async function ProductOverviewPage({
             Retailer prices linked to this product.
           </p>
         </Link>
+        <Link
+  href={`/admin/products/${product.id}/documents`}
+  className="rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
+>
+  <p className="text-sm font-medium text-gray-500">
+    Documents
+  </p>
+
+  <p className="mt-3 text-3xl font-bold">
+    {product._count.documents}
+  </p>
+
+  <p className="mt-2 text-sm text-gray-500">
+    Manuals, warranties, and official product documents.
+  </p>
+</Link>
+
+<Link
+  href={`/admin/products/${product.id}/sources`}
+  className="rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
+>
+  <p className="text-sm font-medium text-gray-500">
+    Sources
+  </p>
+
+  <p className="mt-3 text-3xl font-bold">
+    {product._count.sources}
+  </p>
+
+  <p className="mt-2 text-sm text-gray-500">
+    Official sources used to verify product information.
+  </p>
+</Link>
       </div>
 
       <div className="mt-8 rounded-xl border bg-white p-8 shadow-sm">
