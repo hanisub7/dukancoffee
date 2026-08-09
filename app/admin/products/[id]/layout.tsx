@@ -61,14 +61,33 @@ export default async function ProductWorkspaceLayout({
       model: true,
       modelNumber: true,
       status: true,
+
+      specification: {
+        select: {
+          id: true,
+        },
+      },
+
       brand: {
         select: {
           name: true,
         },
       },
+
       category: {
         select: {
           nameEn: true,
+        },
+      },
+
+      _count: {
+        select: {
+          features: true,
+          images: true,
+          boxContents: true,
+          documents: true,
+          sources: true,
+          offers: true,
         },
       },
     },
@@ -84,21 +103,35 @@ export default async function ProductWorkspaceLayout({
       href: `/admin/products/${product.id}`,
     },
     {
-      label: "Specifications",
+      label: product.specification
+        ? "Specifications ✓"
+        : "Specifications — Missing",
       href: `/admin/products/${product.id}/specifications`,
     },
     {
-      label: "Features",
+      label: `Features (${product._count.features})`,
       href: `/admin/products/${product.id}/features`,
     },
     {
-      label: "Images",
+      label: `Images (${product._count.images})`,
       href: `/admin/products/${product.id}/images`,
     },
     {
-      label: "Offers",
-      href: `/admin/products/${product.id}/offers`,
-    },
+  label: `Box Contents (${product._count.boxContents})`,
+  href: `/admin/products/${product.id}/box-contents`,
+},
+{
+  label: `Documents (${product._count.documents})`,
+  href: `/admin/products/${product.id}/documents`,
+},
+{
+  label: `Sources (${product._count.sources})`,
+  href: `/admin/products/${product.id}/sources`,
+},
+{
+  label: `Offers (${product._count.offers})`,
+  href: `/admin/products/${product.id}/offers`,
+},
   ];
 
   return (
@@ -106,7 +139,7 @@ export default async function ProductWorkspaceLayout({
       <div className="mb-6">
         <Link
           href="/admin/products"
-          className="text-sm font-medium text-gray-600 hover:text-black"
+          className="text-sm font-medium text-gray-600 transition-colors hover:text-orange-700"
         >
           ← Back to Products
         </Link>
@@ -142,19 +175,19 @@ export default async function ProductWorkspaceLayout({
 
         <Link
           href={`/admin/products/${product.id}/edit`}
-          className="inline-flex rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
+          className="inline-flex rounded-lg bg-brand px-4 py-2 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md"
         >
           Edit Product
         </Link>
       </div>
 
       <div className="mt-8 overflow-x-auto border-b">
-        <nav className="flex min-w-max gap-2">
+        <nav className="flex min-w-max gap-1">
           {tabs.map((tab) => (
             <Link
-              key={tab.label}
+              key={tab.href}
               href={tab.href}
-              className="border-b-2 border-transparent px-4 py-3 font-medium text-gray-500 hover:border-gray-300 hover:text-black"
+              className="border-b-2 border-transparent px-4 py-3 text-sm font-medium text-gray-500 transition-colors hover:border-orange-300 hover:text-orange-700"
             >
               {tab.label}
             </Link>

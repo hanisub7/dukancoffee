@@ -126,7 +126,7 @@ model Product {
 
   specification ProductSpecification?
   features      ProductFeature[]
-  boxContents BoxContent[]
+  boxContents   BoxContent[]
   images        ProductImage[]
   documents     Document[]
   sources       Source[]
@@ -297,6 +297,7 @@ model Offer {
   product      Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
   retailer     Retailer       @relation(fields: [retailerId], references: [id], onDelete: Cascade)
   priceHistory PriceHistory[]
+  promotions   Promotion[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -305,6 +306,50 @@ model Offer {
   @@index([productId])
   @@index([retailerId])
   @@map("offers")
+}
+
+model Promotion {
+  id      String @id @default(uuid()) @db.Uuid
+  offerId String @map("offer_id") @db.Uuid
+
+  promotionType PromotionType @map("promotion_type")
+
+  title       String
+  description String? @db.Text
+
+  couponCode String? @map("coupon_code")
+
+  discountPercent Int?     @map("discount_percent")
+  discountAmount  Decimal? @map("discount_amount") @db.Decimal(10, 2)
+
+  cashbackPercent Int?     @map("cashback_percent")
+  cashbackAmount  Decimal? @map("cashback_amount") @db.Decimal(10, 2)
+
+  bankName String? @map("bank_name")
+
+  minimumSpend Decimal? @map("minimum_spend") @db.Decimal(10, 2)
+
+  installmentMonths Int? @map("installment_months")
+
+  freeGiftDescription String? @map("free_gift_description") @db.Text
+
+  terms String? @db.Text
+
+  startsAt DateTime? @map("starts_at")
+  endsAt   DateTime? @map("ends_at")
+
+  active Boolean @default(true)
+
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([offerId])
+  @@index([promotionType])
+  @@index([active])
+  @@index([endsAt])
+  @@map("promotions")
 }
 
 model PriceHistory {
@@ -414,4 +459,15 @@ model BoxContent {
 
   @@index([productId])
   @@map("box_contents")
+}
+
+enum PromotionType {
+  BANK_CARD_DISCOUNT
+  COUPON_CODE
+  CASHBACK
+  FREE_GIFT
+  FREE_SHIPPING
+  INSTALLMENT
+  GENERAL_DISCOUNT
+  OTHER
 }

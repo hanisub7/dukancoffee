@@ -24,12 +24,12 @@ export default async function ProductsPage() {
           </p>
         </div>
 
-        <Link
-          href="/admin/products/new"
-          className="rounded-lg bg-black px-4 py-2 text-white hover:bg-gray-800"
-        >
-          + Add Product
-        </Link>
+ <Link
+  href="/admin/products/new"
+  className="inline-flex items-center justify-center rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-md"
+>
+  + Add Product
+</Link>
       </div>
 
       {products.length === 0 ? (
@@ -102,6 +102,13 @@ export default async function ProductsPage() {
                         className="font-medium text-green-600 hover:underline"
                       >
                         Images
+                      </Link>
+
+                      <Link
+                        href={`/admin/products/${product.id}/box-contents`}
+                        className="hover:text-orange-700"
+                      >
+                        Box Contents
                       </Link>
 
                       <Link

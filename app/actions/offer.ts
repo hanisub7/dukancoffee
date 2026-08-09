@@ -308,10 +308,15 @@ export async function updateOffer(
       id: offerId,
       productId,
     },
-    select: {
-      id: true,
-      retailerId: true,
-    },
+select: {
+  id: true,
+  retailerId: true,
+  currentPrice: true,
+  originalPrice: true,
+  discountPercent: true,
+  inStock: true,
+  checkedAt: true,
+},
   });
 
   if (!existingOffer) {
@@ -351,6 +356,22 @@ export async function updateOffer(
     );
   }
 
+  const priceChanged =
+  Number(existingOffer.currentPrice) !==
+  Number(values.currentPriceValue);
+
+if (priceChanged) {
+  await prisma.priceHistory.create({
+    data: {
+      offerId: existingOffer.id,
+      price: existingOffer.currentPrice,
+      originalPrice: existingOffer.originalPrice,
+      discountPercent: existingOffer.discountPercent,
+      inStock: existingOffer.inStock,
+      checkedAt: existingOffer.checkedAt,
+    },
+  });
+}
   await prisma.offer.update({
     where: {
       id: existingOffer.id,

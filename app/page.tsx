@@ -1,4 +1,9 @@
-import Image from "next/image";
+import { Baloo_Bhaijaan_2 } from "next/font/google";
+
+const heroFont = Baloo_Bhaijaan_2({
+  subsets: ["arabic"],
+  weight: ["700", "800"],
+});
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 
@@ -227,8 +232,58 @@ function ProductVisual({
     <img
       src={imageUrl}
       alt={alt}
-      className="h-full w-full object-contain transition duration-300 group-hover:scale-[1.025]"
+      className="max-h-full max-w-full object-contain transition duration-300 group-hover:scale-[1.025]"
     />
+  );
+}
+
+function HeroProductVisual({
+  imageUrl,
+  alt,
+}: {
+  imageUrl?: string | null;
+  alt: string;
+}) {
+  if (!imageUrl) {
+    return (
+      <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-gradient-to-br from-orange-50 via-white to-stone-100 p-8">
+        <div
+          aria-hidden="true"
+          className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-orange-100/70 blur-3xl"
+        />
+
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-20 -left-16 h-64 w-64 rounded-full bg-stone-200/70 blur-3xl"
+        />
+
+        <div className="relative mx-auto w-full max-w-[280px]">
+          <CoffeeMachinePlaceholder />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group relative flex h-full w-full items-center justify-center overflow-hidden bg-gradient-to-br from-orange-50 via-white to-stone-100 p-4">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-stone-950/10 via-transparent to-white/20"
+      />
+
+<img
+  src={imageUrl}
+  alt={alt}
+  loading="eager"
+  decoding="async"
+  className="max-h-full max-w-full object-contain object-center transition duration-700 ease-out group-hover:scale-[1.025]"
+/>
+
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-stone-950/20 to-transparent"
+      />
+    </div>
   );
 }
 
@@ -520,7 +575,6 @@ export default async function Home() {
     popularProducts,
     latestPriceDrops,
     popularBrands,
-    statistics,
   } = await getHomepageData();
 
   const heroOffer = heroProduct?.offers[0] ?? null;
@@ -532,147 +586,138 @@ export default async function Home() {
 
   return (
     <main dir="rtl" className="min-h-screen bg-background text-text-primary">
-      <header className="border-b border-border bg-white">
-        <div className="site-container flex min-h-20 items-center justify-between gap-6">
-        <Link
-         href="/"
-         className="flex shrink-0 items-center gap-1"
-         aria-label="DukanCoffee"
->
-       <Image
-  src="/logo-dc-orange.png"
-  alt="DukanCoffee"
-  width={64}
-height={64}
-className="h-11 w-auto"
-  priority
-/>
-
-<span
-  dir="ltr"
-  className="-mr-0 text-2xl font-bold text-orange-500"
->
-  DukanCoffee
-</span>
-            </Link>
-            <nav
-            className="hidden items-center gap-8 text-sm font-medium text-text-secondary md:flex"
-            aria-label="التنقل الرئيسي"
-          >
-            <Link href="/products" className="transition hover:text-brand">
-              ماكينات القهوة
-            </Link>
-
-            <Link href="/brands" className="transition hover:text-brand">
-              العلامات التجارية
-            </Link>
-
-            <Link href="/price-drops" className="transition hover:text-brand">
-              انخفاضات الأسعار
-            </Link>
-          </nav>
-
-          <Link
-            href="/products"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-text-secondary transition hover:border-brand hover:text-brand"
-            aria-label="البحث"
-          >
-            <SearchIcon />
-          </Link>
-        </div>
-      </header>
 
       <section className="border-b border-border bg-[#fffaf4]">
-  <div className="site-container grid items-center gap-12 py-14 sm:py-18 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
-    <div className="max-w-3xl">
-      <p className="inline-flex rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
-        مقارنة أسعار ماكينات القهوة
+  <div className="site-container grid gap-12 py-12 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:py-12">
+    <div className="mx-auto w-full max-w-3xl text-center lg:pt-10">
+<h1
+  className={`${heroFont.className} text-center text-[3.8rem] font-extrabold leading-[1.05] text-stone-950 sm:text-6xl lg:text-[4.7rem]`}
+>
+  <span className="block">
+    اصنع قهوتك...
+  </span>
+
+  <span className="mt-1 block text-[#F58220]">
+    كما تحبها
+  </span>
+</h1>
+
+<p className="mt-5 text-xl font-semibold leading-9 text-stone-700 sm:text-2xl">
+  نقارن الأسعار ونتابع تغيرها لتختار بثقة
+</p>
+<form
+  action="/products"
+  method="get"
+  className="mx-auto mt-9 w-full max-w-2xl"
+>
+  <label htmlFor="homepage-search" className="sr-only">
+    ابحث عن ماكينة قهوة
+  </label>
+
+  <div className="group flex items-center rounded-2xl border border-border bg-white p-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-within:border-brand/40 focus-within:shadow-2xl">
+    <div className="flex min-w-0 flex-1 items-center gap-4 px-4">
+      <SearchIcon className="h-6 w-6 shrink-0 text-text-muted transition-colors duration-200 group-focus-within:text-brand" />
+
+      <input
+        id="homepage-search"
+        type="search"
+        name="q"
+        placeholder="ابحث عن ماكينة، موديل أو علامة تجارية..."
+        className="min-h-14 w-full border-0 bg-transparent text-base text-text-primary outline-none placeholder:text-text-muted"
+      />
+    </div>
+
+<button
+  type="submit"
+  style={{ color: "#FFFFFF" }}
+  className="min-h-14 min-w-[110px] shrink-0 rounded-xl bg-brand px-8 text-lg font-bold shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-lg active:translate-y-0"
+>
+  بحث
+</button>
+  </div>
+</form>
+
+<div className="mt-7 grid gap-4 sm:grid-cols-3">
+  <div className="flex items-center gap-3">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 text-[#F58220]">
+      <span aria-hidden="true" className="text-lg">
+        ◇
+      </span>
+    </div>
+
+    <div>
+      <p className="font-bold text-stone-900">
+        مقارنة الأسعار
       </p>
 
-      <h1 className="mt-6 text-4xl font-bold leading-[1.25] tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
-        اعثر على ماكينة القهوة
-        <span className="mt-2 block text-brand">
-          المناسبة بأفضل سعر
-        </span>
-      </h1>
+      <p className="mt-1 text-xs text-stone-500">
+        اعثر على أفضل سعر
+      </p>
+    </div>
+  </div>
 
-      <p className="mt-6 max-w-2xl text-base leading-8 text-text-secondary sm:text-lg">
-        قارن الأسعار الحالية، تابع تاريخ تغير السعر، وتعرّف على مواصفات
-        الماكينة قبل الانتقال إلى المتجر.
+  <div className="flex items-center gap-3">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 text-[#F58220]">
+      <span aria-hidden="true" className="text-lg">
+        ↗
+      </span>
+    </div>
+
+    <div>
+      <p className="font-bold text-stone-900">
+        تاريخ تغير السعر
       </p>
 
-      <form action="/products" method="get" className="mt-8 max-w-2xl">
-        <label htmlFor="homepage-search" className="sr-only">
-          ابحث عن ماكينة قهوة
-        </label>
+      <p className="mt-1 text-xs text-stone-500">
+        تابع الانخفاض والارتفاع
+      </p>
+    </div>
+  </div>
 
-        <div className="flex items-center rounded-2xl border border-border bg-white p-2 shadow-card">
-          <div className="flex min-w-0 flex-1 items-center gap-3 px-3">
-            <SearchIcon className="h-5 w-5 shrink-0 text-text-muted" />
+  <div className="flex items-center gap-3">
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 text-[#F58220]">
+      <span aria-hidden="true" className="text-lg">
+        ✓
+      </span>
+    </div>
 
-            <input
-              id="homepage-search"
-              type="search"
-              name="q"
-              placeholder="ابحث عن ماكينة أو علامة تجارية"
-              className="min-h-12 w-full border-0 bg-transparent text-base text-text-primary outline-none placeholder:text-text-muted"
-            />
-          </div>
+    <div>
+      <p className="font-bold text-stone-900">
+        معلومات واضحة
+      </p>
 
-          <button
-            type="submit"
-            className="min-h-12 shrink-0 rounded-xl bg-brand px-7 text-sm font-semibold text-white transition hover:bg-brand-hover"
-          >
-            بحث
-          </button>
-        </div>
-      </form>
-
-      <div className="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm text-text-muted">
-        <span className="flex items-center gap-2">
-          <span className="text-brand" aria-hidden="true">
-            ✓
-          </span>
-          مقارنة الأسعار
-        </span>
-
-        <span className="flex items-center gap-2">
-          <span className="text-brand" aria-hidden="true">
-            ✓
-          </span>
-          تاريخ تغير السعر
-        </span>
-
-        <span className="flex items-center gap-2">
-          <span className="text-brand" aria-hidden="true">
-            ✓
-          </span>
-          معلومات واضحة
-        </span>
-      </div>
+      <p className="mt-1 text-xs text-stone-500">
+        بيانات دقيقة وموثوقة
+      </p>
+    </div>
+    </div>
+    </div>
     </div>
 
     <div className="mx-auto w-full max-w-lg">
-      <div className="overflow-hidden rounded-[2rem] border border-orange-100 bg-white p-6 shadow-xl shadow-orange-950/5 sm:p-8">
-        <div className="flex h-[300px] items-center justify-center rounded-[1.5rem] bg-[#fff7ed] p-6">
-          <ProductVisual
-            imageUrl={heroImage?.url}
-            alt={
-              heroImage?.altText ??
-              heroProduct?.fullName ??
-              "ماكينة قهوة"
-            }
-          />
-        </div>
+      <div className="group overflow-hidden rounded-[2.25rem] border border-orange-100/80 bg-white p-6 shadow-[0_18px_60px_rgba(28,25,23,0.08)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(28,25,23,0.12)] sm:p-8">
+<div className="relative h-[340px] overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange-50 via-white to-stone-100 sm:h-[380px]">
+  <HeroProductVisual
+    imageUrl={heroImage?.url}
+    alt={
+      heroImage?.altText ??
+      heroProduct?.fullName ??
+      "ماكينة قهوة"
+    }
+  />
+
+  {heroProduct ? (
+    <div className="absolute right-5 top-5 rounded-full border border-brand-border bg-brand-soft px-4 py-2 text-sm font-semibold text-brand shadow-sm backdrop-blur">
+      ماكينة مختارة
+    </div>
+  ) : null}
+</div>
 
         <div className="pt-6">
           {heroProduct ? (
             <>
-              <p className="text-sm font-medium text-brand">
-                ماكينة مختارة
-              </p>
 
-              <div className="mt-3 flex items-end justify-between gap-5">
+              <div className="flex items-end justify-between gap-5">
                 <div className="min-w-0">
                   <p
                     dir="ltr"
@@ -717,9 +762,9 @@ className="h-11 w-auto"
 
               <Link
                 href={`/products/${heroProduct.slug}`}
-                className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand-hover"
+                className="mt-5 inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand px-6 text-base font-semibold tracking-wide !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-lg"
               >
-                عرض تفاصيل الماكينة
+                عرض تفاصيل الماكينة      
               </Link>
             </>
           ) : (
@@ -737,84 +782,16 @@ className="h-11 w-auto"
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
-<section className="border-b border-border bg-surface-soft">
-  <div className="site-container py-10 sm:py-12">
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
-          ☕
-        </div>
-
-        <p className="mt-5 text-3xl font-bold text-stone-900">
-          {statistics.products}
-        </p>
-
-        <p className="mt-2 text-sm font-medium text-text-secondary">
-          ماكينة قهوة
-        </p>
-
-        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
-      </article>
-
-      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
-          🏷️
-        </div>
-
-        <p className="mt-5 text-3xl font-bold text-stone-900">
-          {statistics.brands}
-        </p>
-
-        <p className="mt-2 text-sm font-medium text-text-secondary">
-          علامة تجارية
-        </p>
-
-        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
-      </article>
-
-      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
-          💰
-        </div>
-
-        <p className="mt-5 text-3xl font-bold text-stone-900">
-          {statistics.offers}
-        </p>
-
-        <p className="mt-2 text-sm font-medium text-text-secondary">
-          عرض متاح
-        </p>
-
-        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
-      </article>
-
-      <article className="group rounded-2xl border border-border bg-white p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50 text-2xl">
-          📈
-        </div>
-
-        <p className="mt-5 text-xl font-bold text-stone-900">
-          تحديث مستمر
-        </p>
-
-        <p className="mt-2 text-sm font-medium text-text-secondary">
-          لأسعار ماكينات القهوة
-        </p>
-
-        <div className="mt-5 h-1 w-12 rounded-full bg-brand transition-all duration-300 group-hover:w-20" />
-      </article>
-    </div>
-  </div>
-</section>
-      <section className="site-container py-16 sm:py-20 lg:py-24">
+      <section className="site-container py-8 sm:py-10 lg:py-12">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
             <p className="text-sm font-semibold text-brand">الأكثر بحثًا</p>
 
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
               ماكينات قهوة شائعة
             </h2>
 
@@ -825,7 +802,7 @@ className="h-11 w-auto"
 
           <Link
             href="/products"
-            className="text-sm font-semibold text-brand transition hover:text-brand-hover"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
           >
             عرض جميع الماكينات ←
           </Link>
@@ -843,7 +820,7 @@ className="h-11 w-auto"
                   key={product.id}
                   className="premium-card group overflow-hidden"
                 >
-                  <div className="flex h-64 items-center justify-center bg-surface-soft p-8">
+                  <div className="flex h-64 items-center justify-center overflow-hidden bg-surface-soft p-3">
                     <ProductVisual
                       imageUrl={image?.url}
                       alt={image?.altText ?? product.fullName}
@@ -916,14 +893,14 @@ className="h-11 w-auto"
       </section>
 
       <section className="border-y border-border bg-surface-soft">
-        <div className="site-container py-16 sm:py-20 lg:py-24">
+        <div className="site-container py-8 sm:py-10 lg:py-12">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
               <p className="text-sm font-semibold text-brand">
                 تحديثات حديثة
               </p>
 
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
                 أحدث انخفاضات الأسعار
               </h2>
 
@@ -934,7 +911,7 @@ className="h-11 w-auto"
 
             <Link
               href="/price-drops"
-              className="text-sm font-semibold text-brand transition hover:text-brand-hover"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
             >
               عرض جميع التغيرات ←
             </Link>
@@ -1012,7 +989,7 @@ className="h-11 w-auto"
 
                   <Link
                     href={`/products/${item.product.slug}`}
-                    className="mt-5 inline-flex text-sm font-semibold text-brand transition hover:text-brand-hover"
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
                   >
                     عرض سجل السعر ←
                   </Link>
@@ -1033,178 +1010,87 @@ className="h-11 w-auto"
         </div>
       </section>
 
-      <section className="site-container py-16 sm:py-20 lg:py-24">
-        <div className="text-center">
-          <p className="text-sm font-semibold text-brand">
-            العلامات التجارية
+<section className="site-container py-7 sm:py-8 lg:py-9">
+  <div className="text-center">
+    <p className="text-sm font-semibold text-brand">
+      العلامات التجارية
+    </p>
+
+    <h2 className="mt-2 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+      علامات تجارية شائعة
+    </h2>
+  </div>
+
+  {popularBrands.length > 0 ? (
+    <div className="mx-auto mt-6 flex max-w-5xl flex-wrap justify-center gap-4">
+      {popularBrands.map((brand) => (
+        <Link
+          key={brand.id}
+          href={`/brands/${brand.slug}`}
+          dir="ltr"
+          className="flex min-h-28 w-full max-w-[220px] flex-col items-center justify-center rounded-2xl border border-border bg-white px-5 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-sm"
+        >
+          {brand.logoUrl ? (
+            <img
+              src={brand.logoUrl}
+              alt={brand.name}
+              className="mb-3 h-9 max-w-[120px] object-contain"
+            />
+          ) : null}
+
+          <span className="font-semibold text-text-secondary transition-colors group-hover:text-brand">
+            {brand.name}
+          </span>
+
+        </Link>
+      ))}
+    </div>
+  ) : (
+    <div className="mx-auto mt-7 max-w-3xl rounded-2xl border border-dashed border-border bg-surface-soft px-6 py-10 text-center">
+      <p className="font-semibold text-stone-900">
+        لا توجد علامات تجارية بمنتجات منشورة
+      </p>
+    </div>
+  )}
+</section>
+
+<section className="border-y border-border bg-white">
+  <div className="site-container py-9 sm:py-10 lg:py-12">
+    <div className="max-w-3xl">
+      <p className="text-sm font-semibold text-brand">
+        لماذا DukanCoffee؟
+      </p>
+
+      <h2 className="mt-2 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+        معلومات واضحة لقرار شراء أفضل
+      </h2>
+    </div>
+
+    <div className="mt-5 grid gap-6 md:grid-cols-3 md:gap-8">
+      {benefits.map((benefit) => (
+        <article
+          key={benefit.number}
+          className="border-t border-border pt-4"
+        >
+          <p
+            dir="ltr"
+            className="text-sm font-semibold text-brand"
+          >
+            {benefit.number}
           </p>
 
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            علامات تجارية شائعة
-          </h2>
-        </div>
+          <h3 className="mt-3 text-xl font-semibold text-stone-900">
+            {benefit.title}
+          </h3>
 
-        {popularBrands.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-            {popularBrands.map((brand) => (
-              <Link
-                key={brand.id}
-                href={`/brands/${brand.slug}`}
-                dir="ltr"
-                className="flex min-h-28 flex-col items-center justify-center rounded-2xl border border-border bg-white px-4 text-center transition hover:border-brand"
-              >
-                {brand.logoUrl ? (
-                  <img
-                    src={brand.logoUrl}
-                    alt={brand.name}
-                    className="mb-3 h-9 max-w-[120px] object-contain"
-                  />
-                ) : null}
-
-                <span className="font-semibold text-text-secondary transition hover:text-brand">
-                  {brand.name}
-                </span>
-
-                <span className="mt-1 text-xs text-text-muted">
-                  {brand._count.products} منتج
-                </span>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-10 rounded-2xl border border-dashed border-border bg-surface-soft px-6 py-14 text-center">
-            <p className="font-semibold text-stone-900">
-              لا توجد علامات تجارية بمنتجات منشورة
-            </p>
-          </div>
-        )}
-      </section>
-
-      <section className="border-y border-border bg-white">
-        <div className="site-container py-16 sm:py-20 lg:py-24">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold text-brand">
-              لماذا DukanCoffee؟
-            </p>
-
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-              معلومات واضحة لقرار شراء أفضل
-            </h2>
-          </div>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {benefits.map((benefit) => (
-              <article
-                key={benefit.number}
-                className="border-t border-border pt-6"
-              >
-                <p
-                  dir="ltr"
-                  className="text-sm font-semibold text-brand"
-                >
-                  {benefit.number}
-                </p>
-
-                <h3 className="mt-5 text-xl font-semibold text-stone-900">
-                  {benefit.title}
-                </h3>
-
-                <p className="mt-3 leading-7 text-text-secondary">
-                  {benefit.description}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <footer className="bg-stone-900 text-white">
-        <div className="site-container py-12">
-          <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr]">
-            <div>
-              <Link
-                href="/"
-                dir="ltr"
-                className="text-xl font-semibold tracking-tight"
-              >
-                DukanCoffee
-              </Link>
-
-              <p className="mt-4 max-w-md leading-7 text-stone-400">
-                منصة لمتابعة أسعار ماكينات القهوة وتاريخ تغيرها في السعودية،
-                مع الاستعداد للتوسع في دول الخليج.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 text-sm">
-              <div className="space-y-3">
-                <p className="font-semibold text-white">استكشف</p>
-
-                <Link
-                  href="/products"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  ماكينات القهوة
-                </Link>
-
-                <Link
-                  href="/brands"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  العلامات التجارية
-                </Link>
-
-                <Link
-                  href="/categories"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  التصنيفات
-                </Link>
-              </div>
-
-              <div className="space-y-3">
-                <p className="font-semibold text-white">DukanCoffee</p>
-
-                <Link
-                  href="/about"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  من نحن
-                </Link>
-
-                <Link
-                  href="/contact"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  تواصل معنا
-                </Link>
-
-                <Link
-                  href="/privacy"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  سياسة الخصوصية
-                </Link>
-
-                <Link
-                  href="/terms"
-                  className="block text-stone-400 transition hover:text-white"
-                >
-                  الشروط والأحكام
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-12 flex flex-col gap-3 border-t border-stone-800 pt-6 text-sm text-stone-500 sm:flex-row sm:items-center sm:justify-between">
-            <p dir="ltr">
-              © {new Date().getFullYear()} DukanCoffee
-            </p>
-
-            <p>الأسعار قابلة للتغير لدى المتجر دون إشعار مسبق.</p>
-          </div>
-        </div>
-      </footer>
+          <p className="mt-2 leading-7 text-text-secondary">
+            {benefit.description}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
     </main>
   );
 }

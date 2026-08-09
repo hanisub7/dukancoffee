@@ -164,30 +164,29 @@ export default async function CategoryPage({
   });
 
   return (
-    <main
-      dir="rtl"
-      className="min-h-screen bg-white text-stone-900"
-    >
-      <section className="border-b border-stone-200 bg-stone-50">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold text-orange-700">
-            التصنيف
-          </p>
+    <main dir="rtl" className="min-h-screen bg-white text-stone-900">
+      <section className="border-b border-stone-200 bg-[#FFF9F4]">
+        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-6 lg:px-8">
+<div className="max-w-3xl text-right">
+  <p className="text-lg font-semibold text-[#C85A1A]">
+    التصنيف
+  </p>
 
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            {category.nameAr}
-          </h1>
+  <h1 className="mt-3 text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl">
+    {category.nameAr}
+  </h1>
 
-          <p
-            dir="ltr"
-            className="mt-2 text-left text-sm text-stone-500"
-          >
-            {category.nameEn}
-          </p>
+  <p
+    dir="ltr"
+    className="mt-2 text-right text-base font-medium text-stone-500"
+  >
+    {category.nameEn}
+  </p>
 
-          <p className="mt-3 text-stone-600">
-            {products.length} منتج منشور
-          </p>
+  <p className="mt-4 text-base font-medium text-stone-600">
+    {products.length} منتج
+  </p>
+</div>
         </div>
       </section>
 
@@ -197,7 +196,7 @@ export default async function CategoryPage({
         ) : (
           <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 py-14 text-center">
             <p className="font-semibold text-stone-900">
-              لا توجد منتجات منشورة في هذا التصنيف.
+              لا توجد منتجات متاحة في هذا التصنيف حالياً.
             </p>
           </div>
         )}

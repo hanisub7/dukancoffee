@@ -146,7 +146,7 @@ export async function getPriceDrops(
           checkedAt: "desc",
         },
 
-        take: 2,
+        take: 1,
 
         select: {
           price: true,
@@ -156,20 +156,24 @@ export async function getPriceDrops(
     },
   });
 
-   const priceDrops = offers.flatMap<PriceDropItem>((offer) => {
-    if (offer.priceHistory.length < 2) {
-      return [];
-    }
+const priceDrops = offers.flatMap((offer) => {
+  const latestHistory = offer.priceHistory[0];
 
-    const latestHistory = offer.priceHistory[0];
-    const previousHistory = offer.priceHistory[1];
+  if (!latestHistory) {
+    return [];
+  }
 
-    const currentPrice = decimalToNumber(latestHistory.price);
-    const previousPrice = decimalToNumber(previousHistory.price);
+  const currentPrice = decimalToNumber(
+    offer.currentPrice,
+  );
 
-    if (currentPrice >= previousPrice) {
-      return [];
-    }
+  const previousPrice = decimalToNumber(
+    latestHistory.price,
+  );
+
+  if (currentPrice >= previousPrice) {
+    return [];
+  }
 
     const mainImage =
       offer.product.images.find(
@@ -188,7 +192,7 @@ export async function getPriceDrops(
         currentPrice,
         savingAmount: previousPrice - currentPrice,
         currencyCode: offer.currencyCode,
-        checkedAt: latestHistory.checkedAt,
+        checkedAt: offer.checkedAt,
       },
     ];
   });

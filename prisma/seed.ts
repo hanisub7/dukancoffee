@@ -4,6 +4,16 @@ import bcrypt from "bcrypt";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../app/generated/prisma/client";
 
+import { seedBrands } from "./seed-brands";
+import { seedProductFamilies } from "./seed-product-families";
+import { seedProducts } from "./seed-products";
+import { seedSpecifications } from "./seed-specifications";
+import { seedImages } from "./seed-images";
+import { seedFeatures } from "./seed-features";
+import { seedBoxContents } from "./seed-box-contents";
+import { seedDocuments } from "./seed-documents";
+import { seedSources } from "./seed-sources";
+
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
@@ -140,6 +150,7 @@ async function seedCategories(): Promise<void> {
         nameAr: category.nameAr,
         sortOrder: category.sortOrder,
         active: true,
+        deletedAt: null,
       },
       create: {
         ...category,
@@ -192,11 +203,43 @@ async function main(): Promise<void> {
 
   await seedCountries();
   await seedCategories();
+
+  const brandCount = await seedBrands(prisma);
+  const productFamilyCount = await seedProductFamilies(prisma);
+  const productCount = await seedProducts(prisma);
+  const specificationCount = await seedSpecifications(prisma);
+  const imageCount = await seedImages(prisma);
+  const {
+  featureCount,
+  productFeatureCount,
+} = await seedFeatures(prisma);
+  const boxContentCount = await seedBoxContents(prisma);
+  const documentCount = await seedDocuments(prisma);
+  const sourceCount = await seedSources(prisma);
   await seedAdminUser();
 
   console.log("Seed completed successfully.");
   console.log(`Countries processed: ${countries.length}`);
   console.log(`Categories processed: ${categories.length}`);
+  console.log(`Brands processed: ${brandCount}`);
+  console.log(
+  `Product families processed: ${productFamilyCount}`,
+);
+  console.log(`Products processed: ${productCount}`);
+  console.log(
+  `Specifications processed: ${specificationCount}`,
+);
+  console.log(`Images processed: ${imageCount}`);
+  console.log(`Features processed: ${featureCount}`);
+  console.log(
+  `Product features processed: ${productFeatureCount}`,
+   );
+  console.log(
+  `Box contents created: ${boxContentCount}`,
+  );
+  console.log(`Documents created: ${documentCount}`);
+  console.log(`Sources created: ${sourceCount}`);
+
   console.log(`Admin account processed: ${adminEmail}`);
 }
 

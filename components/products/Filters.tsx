@@ -12,42 +12,19 @@ type FiltersProps = {
   categories: FilterOption[];
   selectedBrand?: string;
   selectedCategory?: string;
-  selectedSort?: string;
 };
-
-const sortOptions: FilterOption[] = [
-  {
-    value: "updated",
-    label: "الأحدث تحديثًا",
-  },
-  {
-    value: "price-asc",
-    label: "السعر: من الأقل",
-  },
-  {
-    value: "price-desc",
-    label: "السعر: من الأعلى",
-  },
-  {
-    value: "name",
-    label: "الاسم",
-  },
-];
 
 export default function Filters({
   brands,
   categories,
   selectedBrand = "",
   selectedCategory = "",
-  selectedSort = "updated",
 }: FiltersProps) {
   const [showAdditionalOptions, setShowAdditionalOptions] =
     useState(false);
 
   const hasSelectedFilters = Boolean(
-    selectedBrand ||
-      selectedCategory ||
-      selectedSort !== "updated",
+    selectedBrand || selectedCategory,
   );
 
   return (
@@ -57,7 +34,7 @@ export default function Filters({
         method="get"
         className="rounded-2xl border border-black/10 bg-white p-3 sm:p-4"
       >
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
           <div>
             <label
               htmlFor="category"
@@ -146,54 +123,13 @@ export default function Filters({
             </div>
           </div>
 
-          <div>
-            <label
-              htmlFor="sort"
-              className="sr-only"
-            >
-              ترتيب المنتجات
-            </label>
-
-            <div className="relative">
-              <select
-                id="sort"
-                name="sort"
-                defaultValue={selectedSort}
-                className="h-11 w-full appearance-none rounded-xl border border-black/10 bg-white px-4 pe-10 text-sm font-medium text-black outline-none transition-colors hover:border-black/25 focus:border-[#C85A1A] focus:ring-2 focus:ring-[#C85A1A]/10"
-              >
-                {sortOptions.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 20 20"
-                fill="none"
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/45"
-              >
-                <path
-                  d="m6 8 4 4 4-4"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-xl bg-[#F2A064] px-5 text-sm font-bold text-black transition-colors hover:bg-[#E98B48] focus:outline-none focus:ring-2 focus:ring-[#C85A1A] focus:ring-offset-2"
-          >
-            تطبيق
-          </button>
+<button
+  type="submit"
+  style={{ color: "#FFFFFF" }}
+  className="inline-flex h-11 items-center justify-center rounded-xl bg-[#F2A064] px-5 text-sm font-bold transition-colors hover:bg-[#E98B48] focus:outline-none focus:ring-2 focus:ring-[#C85A1A] focus:ring-offset-2"
+>
+  تطبيق
+</button>
         </div>
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3">

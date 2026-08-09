@@ -22,34 +22,34 @@ export default function PublicHeader() {
       return pathname === "/";
     }
 
-    return pathname.startsWith(href);
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex min-h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
           onClick={() => setIsMenuOpen(false)}
-          className="flex items-center gap-3"
+          className="flex shrink-0 items-center gap-3"
         >
           <Image
             src="/logo-dc-orange.png"
             alt="DukanCoffee"
-            width={44}
-            height={44}
+            width={48}
+            height={48}
             priority
-            className="h-11 w-11 object-contain"
+            className="h-12 w-auto object-contain"
           />
 
-          <span className="text-lg font-bold tracking-tight text-stone-900 sm:text-xl">
+          <span className="text-xl font-bold tracking-tight text-orange-500 sm:text-2xl">
             DukanCoffee
           </span>
         </Link>
 
         <nav
           aria-label="التنقل الرئيسي"
-          className="hidden items-center gap-1 lg:flex"
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-4 whitespace-nowrap lg:flex"
         >
           {links.map((link) => {
             const active = isActive(link.href);
@@ -58,13 +58,21 @@ export default function PublicHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                aria-current={active ? "page" : undefined}
+               className={`relative px-3 py-3 text-[17px] font-normal transition-colors duration-200 ${
                   active
-                    ? "bg-orange-50 text-orange-700"
-                    : "text-stone-600 hover:bg-stone-50 hover:text-orange-700"
+                    ? "text-orange-500"
+                    : "text-stone-700 hover:text-orange-500"
                 }`}
               >
                 {link.label}
+
+                {active && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-2 bottom-1 h-0.5 rounded-full bg-orange-500"
+                  />
+                )}
               </Link>
             );
           })}
@@ -76,7 +84,7 @@ export default function PublicHeader() {
           aria-expanded={isMenuOpen}
           aria-controls="public-mobile-menu"
           onClick={() => setIsMenuOpen((current) => !current)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-stone-200 text-stone-700 transition hover:bg-stone-50 lg:hidden"
+          className="mr-auto inline-flex h-11 w-11 items-center justify-center rounded-xl border border-stone-200 text-stone-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-600 lg:hidden"
         >
           <span className="sr-only">
             {isMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
@@ -88,11 +96,13 @@ export default function PublicHeader() {
                 isMenuOpen ? "translate-y-2 rotate-45" : ""
               }`}
             />
+
             <span
               className={`block h-0.5 w-5 bg-current transition ${
                 isMenuOpen ? "opacity-0" : ""
               }`}
             />
+
             <span
               className={`block h-0.5 w-5 bg-current transition ${
                 isMenuOpen ? "-translate-y-2 -rotate-45" : ""
@@ -116,11 +126,12 @@ export default function PublicHeader() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  aria-current={active ? "page" : undefined}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`rounded-lg px-3 py-3 text-sm font-medium transition ${
+                  className={`rounded-xl px-4 py-3 text-base font-semibold transition-colors ${
                     active
-                      ? "bg-orange-50 text-orange-700"
-                      : "text-stone-700 hover:bg-stone-50 hover:text-orange-700"
+                      ? "bg-orange-50 text-orange-600"
+                      : "text-stone-700 hover:bg-stone-50 hover:text-orange-600"
                   }`}
                 >
                   {link.label}

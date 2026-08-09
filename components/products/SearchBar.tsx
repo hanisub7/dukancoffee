@@ -105,7 +105,7 @@ export default function SearchBar() {
 
         <button
           type="submit"
-          className="min-h-9 shrink-0 rounded-lg bg-[#F2A064] px-4 text-sm font-bold text-black transition-colors hover:bg-[#E98B48] sm:px-5"
+          className="min-h-9 shrink-0 rounded-lg bg-[#F2A064] px-4 text-sm font-bold !text-white transition-colors hover:bg-[#E98B48] sm:px-5"
         >
           بحث
         </button>

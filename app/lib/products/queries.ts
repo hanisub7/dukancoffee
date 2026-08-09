@@ -22,6 +22,11 @@ export type ProductCatalogParams = {
   page?: number;
 };
 
+export type ProductCatalogQuickSpec = {
+  label: string;
+  value: string;
+};
+
 export type ProductCatalogItem = {
   id: string;
   slug: string;
@@ -34,6 +39,7 @@ export type ProductCatalogItem = {
   priceMovement: ProductCatalogMovement;
   priceMovementText: string | null;
   isLowestPrice: boolean;
+  quickSpecs: ProductCatalogQuickSpec[];
 };
 
 export type ProductCatalogFilterOption = {
@@ -79,6 +85,108 @@ function decimalToNumber(
   value: { toString(): string } | number | string,
 ): number {
   return Number(value.toString());
+}
+
+function formatSpecificationNumber(
+  value: { toString(): string } | number | string,
+  unit: string,
+  maximumFractionDigits = 1,
+): string {
+  const numericValue = decimalToNumber(value);
+
+  const formattedValue = new Intl.NumberFormat("en-US", {
+    maximumFractionDigits,
+  }).format(numericValue);
+
+  return `${formattedValue} ${unit}`;
+}
+
+type CatalogSpecification = {
+  machineType: string | null;
+  grinderType: string | null;
+  displayType: string | null;
+  milkSystem: string | null;
+  waterTankL:
+    | {
+        toString(): string;
+      }
+    | number
+    | string
+    | null;
+  pumpPressureBar:
+    | {
+        toString(): string;
+      }
+    | number
+    | string
+    | null;
+};
+
+function buildQuickSpecs(
+  specification: CatalogSpecification | null,
+): ProductCatalogQuickSpec[] {
+  if (!specification) {
+    return [];
+  }
+
+  const quickSpecs: Array<ProductCatalogQuickSpec | null> = [
+    specification.machineType
+      ? {
+          label: "نوع الماكينة",
+          value: specification.machineType,
+        }
+      : null,
+
+    specification.grinderType
+      ? {
+          label: "الطاحونة",
+          value: specification.grinderType,
+        }
+      : null,
+
+    specification.displayType
+      ? {
+          label: "الشاشة",
+          value: specification.displayType,
+        }
+      : null,
+
+    specification.waterTankL !== null
+      ? {
+          label: "خزان الماء",
+          value: formatSpecificationNumber(
+            specification.waterTankL,
+            "لتر",
+          ),
+        }
+      : null,
+
+    specification.pumpPressureBar !== null
+      ? {
+          label: "ضغط المضخة",
+          value: formatSpecificationNumber(
+            specification.pumpPressureBar,
+            "بار",
+          ),
+        }
+      : null,
+
+    specification.milkSystem
+      ? {
+          label: "نظام الحليب",
+          value: specification.milkSystem,
+        }
+      : null,
+  ];
+
+  return quickSpecs
+    .filter(
+      (
+        specification,
+      ): specification is ProductCatalogQuickSpec =>
+        specification !== null,
+    )
+    .slice(0, 4);
 }
 
 function getPriceMovement(
@@ -253,6 +361,18 @@ export async function getProductCatalog(
             },
           },
 
+specification: {
+  select: {
+    machineType: true,
+    grinderType: true,
+    displayType: true,
+    milkSystem: true,
+    waterTankL: true,
+    pumpPressureBar: true,
+  },
+},
+
+
           images: {
             orderBy: [
               {
@@ -366,24 +486,27 @@ export async function getProductCatalog(
         ? getPriceMovement(bestOffer.priceHistory)
         : "none";
 
-      return {
-        id: product.id,
-        slug: product.slug,
-        name: product.fullName,
-        brandName: product.brand.name,
-        subtitle:
-          product.modelNumber ??
-          product.model ??
-          product.productFamily.name ??
-          product.category.nameEn,
-        imageUrl: mainImage?.url ?? null,
-        price,
-        currencyCode: bestOffer?.currencyCode ?? "SAR",
-        priceMovement,
-        priceMovementText:
-          getPriceMovementText(priceMovement),
-        isLowestPrice: false,
-      };
+return {
+  id: product.id,
+  slug: product.slug,
+  name: product.fullName,
+  brandName: product.brand.name,
+  subtitle:
+    product.modelNumber ??
+    product.model ??
+    product.productFamily.name ??
+    product.category.nameEn,
+  imageUrl: mainImage?.url ?? null,
+  price,
+  currencyCode: bestOffer?.currencyCode ?? "SAR",
+  priceMovement,
+  priceMovementText:
+    getPriceMovementText(priceMovement),
+  isLowestPrice: false,
+  quickSpecs: buildQuickSpecs(
+    product.specification,
+  ),
+};
     });
 
   catalogProducts.sort((firstProduct, secondProduct) => {

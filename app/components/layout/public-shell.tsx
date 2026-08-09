@@ -12,6 +12,7 @@ export default function PublicShell({
   children,
 }: PublicShellProps) {
   const pathname = usePathname();
+  const isPriceDropsPage = pathname.startsWith("/price-drops");
 
   const isPrivateRoute =
     pathname.startsWith("/admin") ||
@@ -25,9 +26,15 @@ export default function PublicShell({
     <>
       <PublicHeader />
 
-      <main className="min-h-[calc(100vh-64px)]">
-        {children}
-      </main>
+<main
+  className={
+    isPriceDropsPage
+      ? ""
+      : "min-h-[calc(100vh-64px)]"
+  }
+>
+  {children}
+</main>
 
       <PublicFooter />
     </>

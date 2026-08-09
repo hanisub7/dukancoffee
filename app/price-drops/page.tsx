@@ -25,126 +25,162 @@ export default async function PriceDropsPage({
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          أحدث انخفاضات الأسعار
-        </h1>
+<div className="mb-10 text-center">
 
-        <p className="mt-2 text-stone-600">
-          تم العثور على {result.totalItems} انخفاض في الأسعار.
-        </p>
-      </div>
+  <h1 className="mt-2 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+    أحدث انخفاضات الأسعار
+  </h1>
 
-      <form
-        method="get"
-        className="mb-8 flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4"
-      >
-        <label
-          htmlFor="sort"
-          className="text-sm font-medium text-stone-700"
-        >
-          ترتيب النتائج
-        </label>
+  <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-stone-700 sm:text-base">
+    تابع أحدث التخفيضات على أسعار ماكينات القهوة واكتشف أفضل الفرص للشراء.
+  </p>
 
-        <select
-          id="sort"
-          name="sort"
-          defaultValue={params.sort ?? "latest"}
-          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-        >
-          <option value="latest">الأحدث</option>
-          <option value="saving-desc">أكبر توفير</option>
-          <option value="price-asc">
-            السعر: من الأقل إلى الأعلى
-          </option>
-          <option value="price-desc">
-            السعر: من الأعلى إلى الأقل
-          </option>
-        </select>
+</div>
 
-        <button
-          type="submit"
-          className="rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white"
-        >
-          تطبيق
-        </button>
-      </form>
+<form
+  method="get"
+  className="mb-8 flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end"
+>
+  <label
+    htmlFor="sort"
+    className="text-sm font-medium text-stone-600"
+  >
+    ترتيب النتائج
+  </label>
 
-      {result.items.length === 0 ? (
-        <div className="rounded-xl border bg-white p-10 text-center">
-          <h2 className="text-xl font-semibold">
-            لا توجد انخفاضات أسعار حالياً
-          </h2>
+  <select
+    id="sort"
+    name="sort"
+    defaultValue={params.sort ?? "latest"}
+    className="h-11 min-w-[210px] rounded-xl border border-stone-200 bg-white px-4 text-sm font-medium text-stone-900 outline-none transition-colors hover:border-stone-300 focus:border-brand focus:ring-2 focus:ring-brand/10"
+  >
+    <option value="latest">الأحدث</option>
+    <option value="saving-desc">أكبر توفير</option>
+    <option value="price-asc">
+      السعر: من الأقل إلى الأعلى
+    </option>
+    <option value="price-desc">
+      السعر: من الأعلى إلى الأقل
+    </option>
+  </select>
 
-          <p className="mt-3 text-stone-600">
-            سنعرض أحدث الانخفاضات بمجرد توفرها.
-          </p>
-        </div>
-      ) : (
+  <button
+    type="submit"
+    style={{ color: "#FFFFFF" }}
+    className="h-11 rounded-xl bg-brand px-5 text-sm font-semibold transition-colors hover:bg-brand-hover"
+  >
+    تطبيق
+  </button>
+</form>
+
+{result.items.length === 0 ? (
+  <div className="rounded-3xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm sm:px-10">
+    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-2xl text-[#C85A1A]">
+      ↓
+    </div>
+
+    <h2 className="mt-5 text-2xl font-bold tracking-tight text-stone-900">
+      لا توجد انخفاضات أسعار حالياً
+    </h2>
+
+    <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-stone-600 sm:text-base">
+      سنعرض أحدث انخفاضات الأسعار هنا بمجرد توفرها.
+    </p>
+
+    <Link
+      href="/products"
+      className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[#F2A064] px-6 text-sm font-semibold shadow-sm transition-colors hover:bg-[#E98B48]"
+      style={{ color: "#FFFFFF" }}
+    >
+      تصفح جميع الماكينات
+    </Link>
+  </div>
+) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {result.items.map((item) => (
-            <article
-              key={item.offerId}
-              className="overflow-hidden rounded-xl border bg-white shadow-sm"
-            >
-              <div className="flex h-56 items-center justify-center bg-stone-50 p-4">
-                {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.productName}
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <div className="text-sm text-stone-400">
-                    لا توجد صورة للمنتج
-                  </div>
-                )}
-              </div>
+<article
+  key={item.offerId}
+  className="group overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+>
+  <div className="flex h-64 items-center justify-center bg-[#F8F8F8] p-6">
+    {item.imageUrl ? (
+      <img
+        src={item.imageUrl}
+        alt={item.productName}
+        className="h-full w-full object-contain object-center transition-transform duration-300 sm:scale-[0.88] sm:group-hover:scale-[0.92] xl:scale-[0.82] xl:group-hover:scale-[0.86]"
+      />
+    ) : (
+      <div className="flex h-full w-full items-center justify-center text-sm text-stone-400">
+        لا توجد صورة للمنتج
+      </div>
+    )}
+  </div>
 
-              <div className="p-5">
-                <div className="mb-3">
-                  <h2 className="font-semibold">
-                    {item.productName}
-                  </h2>
+  <div className="p-6">
+    <div className="mb-5">
+      <p className="text-sm font-semibold text-[#C85A1A]">
+        {item.brandName}
+      </p>
 
-                  <p className="text-sm text-stone-500">
-                    {item.brandName}
-                  </p>
-                </div>
+      <h2
+        dir="ltr"
+        className="mt-2 line-clamp-2 min-h-14 text-left text-lg font-bold leading-7 text-stone-900"
+      >
+        {item.productName}
+      </h2>
+    </div>
 
-                <div className="space-y-2 text-sm">
-                  <div>
-                    المتجر: {item.retailerName}
-                  </div>
+<div className="space-y-4">
+  <div className="flex items-center justify-between gap-4 text-sm">
+    <span className="text-stone-500">
+      المتجر
+    </span>
 
-                  <div>
-                    السعر السابق:{" "}
-                    <span className="line-through">
-                      {item.previousPrice.toFixed(2)}{" "}
-                      {item.currencyCode}
-                    </span>
-                  </div>
+    <span className="font-semibold text-stone-900">
+      {item.retailerName}
+    </span>
+  </div>
 
-                  <div className="font-semibold">
-                    السعر الحالي:{" "}
-                    {item.currentPrice.toFixed(2)}{" "}
-                    {item.currencyCode}
-                  </div>
+  <div className="rounded-2xl bg-stone-50 p-4">
+    <p className="text-xs font-medium text-stone-500">
+      السعر السابق
+    </p>
 
-                  <div className="pt-2">
-                    <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-800">
-                      وفر {item.savingAmount.toFixed(2)}{" "}
-                      {item.currencyCode}
-                    </span>
-                  </div>
-                </div>
+    <p
+      dir="ltr"
+      className="mt-1 text-left text-base font-medium text-stone-400 line-through"
+    >
+      {item.previousPrice.toFixed(2)}{" "}
+      {item.currencyCode}
+    </p>
 
-                <Link
-                  href={`/products/${item.productSlug}`}
-                  className="mt-5 inline-flex rounded-lg bg-stone-900 px-4 py-2 text-white"
-                >
-                  عرض المنتج
-                </Link>
+    <p className="mt-4 text-xs font-medium text-stone-500">
+      السعر الحالي
+    </p>
+
+    <p
+      dir="ltr"
+      className="mt-1 text-left text-2xl font-bold tracking-tight text-[#C85A1A]"
+    >
+      {item.currentPrice.toFixed(2)}{" "}
+      {item.currencyCode}
+    </p>
+  </div>
+
+  <div>
+    <span className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-semibold text-[#C85A1A]">
+      وفر {item.savingAmount.toFixed(2)}{" "}
+      {item.currencyCode}
+    </span>
+  </div>
+</div>
+<Link
+  href={`/products/${item.productSlug}`}
+  style={{ color: "#FFFFFF" }}
+  className="mt-6 flex h-11 w-full items-center justify-center rounded-xl bg-[#F2A064] px-5 text-sm font-bold shadow-sm transition-all duration-200 hover:bg-[#E98B48] hover:shadow-md"
+>
+  عرض المنتج
+</Link>
               </div>
             </article>
           ))}

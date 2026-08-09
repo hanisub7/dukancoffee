@@ -14,6 +14,10 @@ export type ProductGridItem = {
   priceMovement?: ProductPriceMovement;
   priceMovementText?: string | null;
   isLowestPrice?: boolean;
+    quickSpecs: Array<{
+    label: string;
+    value: string;
+  }>;
 };
 
 type ProductGridProps = {
@@ -47,26 +51,33 @@ export default function ProductGrid({
     );
   }
 
-  return (
-    <div
-      dir="rtl"
-      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5"
-    >
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          slug={product.slug}
-          name={product.name}
-          brandName={product.brandName}
-          imageUrl={product.imageUrl}
-          subtitle={product.subtitle}
-          price={product.price}
-          currencyCode={product.currencyCode}
-          priceMovement={product.priceMovement}
-          priceMovementText={product.priceMovementText}
-          isLowestPrice={product.isLowestPrice}
-        />
-      ))}
-    </div>
-  );
+return (
+  <div
+    dir="rtl"
+    className={
+      products.length === 1
+        ? "mx-auto grid w-full max-w-[620px] grid-cols-1 gap-6"
+        : products.length === 2
+          ? "grid w-full grid-cols-1 gap-6 sm:grid-cols-2"
+          : "grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+    }
+  >
+    {products.map((product) => (
+      <ProductCard
+        key={product.id}
+        slug={product.slug}
+        name={product.name}
+        brandName={product.brandName}
+        imageUrl={product.imageUrl}
+        subtitle={product.subtitle}
+        price={product.price}
+        currencyCode={product.currencyCode}
+        priceMovement={product.priceMovement}
+        priceMovementText={product.priceMovementText}
+        isLowestPrice={product.isLowestPrice}
+        quickSpecs={product.quickSpecs}
+      />
+    ))}
+  </div>
+);
 }

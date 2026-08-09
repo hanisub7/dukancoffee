@@ -332,27 +332,34 @@ export default async function ProductOffersPage({
                       </td>
 
                       <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-4">
-                          <Link
-                            href={`/admin/products/${product.id}/offers/${offer.id}/history`}
-                            className="font-medium text-emerald-600 hover:underline"
-                          >
-                            History
-                          </Link>
+                       <div className="flex justify-end gap-4">
+  <Link
+    href={`/admin/products/${product.id}/offers/${offer.id}/history`}
+    className="font-medium text-emerald-600 hover:underline"
+  >
+    History
+  </Link>
 
-                          {isArchived ? (
-                            <span className="text-gray-400">
-                              Locked
-                            </span>
-                          ) : (
-                            <Link
-                              href={`/admin/products/${product.id}/offers/${offer.id}/edit`}
-                              className="font-medium text-blue-600 hover:underline"
-                            >
-                              Edit
-                            </Link>
-                          )}
-                        </div>
+  <Link
+    href={`/admin/products/${product.id}/offers/${offer.id}/promotions`}
+    className="font-medium text-orange-700 hover:underline"
+  >
+    Promotions
+  </Link>
+
+  {isArchived ? (
+    <span className="text-gray-400">
+      Locked
+    </span>
+  ) : (
+    <Link
+      href={`/admin/products/${product.id}/offers/${offer.id}/edit`}
+      className="font-medium text-blue-600 hover:underline"
+    >
+      Edit
+    </Link>
+  )}
+</div>
                       </td>
                     </tr>
                   );
