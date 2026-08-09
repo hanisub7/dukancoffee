@@ -1117,29 +1117,29 @@ const brandDetails: Record<
       </h2>
     </div>
 
-    <div className="mt-5 grid gap-6 md:grid-cols-3 md:gap-8">
-      {benefits.map((benefit) => (
-        <article
-          key={benefit.number}
-          className="border-t border-border pt-4"
-        >
-          <p
-            dir="ltr"
-            className="text-sm font-semibold text-brand"
-          >
-            {benefit.number}
-          </p>
+<div className="mt-6 grid gap-5 md:grid-cols-3">
+  {benefits.map((benefit) => (
+    <article
+      key={benefit.number}
+      className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-md"
+    >
+      <div
+        dir="ltr"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50 text-sm font-bold text-brand"
+      >
+        {benefit.number}
+      </div>
 
-          <h3 className="mt-3 text-xl font-semibold text-stone-900">
-            {benefit.title}
-          </h3>
+      <h3 className="mt-5 text-xl font-bold text-stone-900">
+        {benefit.title}
+      </h3>
 
-          <p className="mt-2 leading-7 text-text-secondary">
-            {benefit.description}
-          </p>
-        </article>
-      ))}
-    </div>
+      <p className="mt-3 text-sm leading-7 text-text-secondary">
+        {benefit.description}
+      </p>
+    </article>
+  ))}
+</div>
   </div>
 </section>
     </main>
