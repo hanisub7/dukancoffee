@@ -23,19 +23,17 @@ export default async function PriceDropsPage({
     sort: params.sort,
   });
 
-  return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
-<div className="mb-10 text-center">
+return (
+  <main className="mx-auto max-w-7xl px-6 py-10">
+    <div className="mb-6 text-center">
+      <h1 className="text-3xl font-bold tracking-tight text-stone-900">
+        أحدث انخفاضات الأسعار
+      </h1>
 
-  <h1 className="mt-2 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-    أحدث انخفاضات الأسعار
-  </h1>
-
-  <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-stone-700 sm:text-base">
-    تابع أحدث التخفيضات على أسعار ماكينات القهوة واكتشف أفضل الفرص للشراء.
-  </p>
-
-</div>
+      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-stone-600">
+        تابع أحدث انخفاضات أسعار ماكينات القهوة.
+      </p>
+    </div>
 
 <form
   method="get"
