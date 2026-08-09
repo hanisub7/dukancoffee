@@ -215,19 +215,7 @@ export default function ProductCard({
             </h2>
           </Link>
 
-          {subtitle ? (
-            <p
-              dir="ltr"
-              className="mt-2 line-clamp-1 min-h-6 text-left text-sm text-stone-500"
-            >
-              {subtitle}
-            </p>
-          ) : (
-            <div
-              className="mt-2 min-h-6"
-              aria-hidden="true"
-            />
-          )}
+
 {quickSpecs.length > 0 ? (
   <div className="mt-5 flex flex-wrap items-center gap-2">
     {quickSpecs.slice(0, 3).map((specification) => (
