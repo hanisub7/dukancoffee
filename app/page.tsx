@@ -1105,7 +1105,7 @@ const brandDetails: Record<
 )}
 </section>
 
-<section className="border-y border-border bg-white">
+<section className="border-t border-border bg-white">
   <div className="site-container py-9 sm:py-10 lg:py-12">
     <div className="max-w-3xl">
       <p className="text-sm font-semibold text-brand">
