@@ -118,9 +118,12 @@ export default async function PriceDropsPage({
 
   <div className="p-6">
     <div className="mb-5">
-      <p className="text-sm font-semibold text-[#C85A1A]">
-        {item.brandName}
-      </p>
+<p
+  dir="ltr"
+  className="text-left text-sm font-semibold text-[#C85A1A]"
+>
+  {item.brandName}
+</p>
 
       <h2
         dir="ltr"
