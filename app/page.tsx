@@ -992,17 +992,24 @@ export default async function Home() {
                 </article>
               ))}
             </div>
-          ) : (
-            <div className="mt-10 rounded-2xl border border-dashed border-border bg-white px-6 py-14 text-center">
-              <p className="font-semibold text-stone-900">
-                لا توجد انخفاضات سعرية مسجلة بعد
-              </p>
+) : (
+  <div className="mt-8 rounded-2xl border border-border bg-white px-6 py-8 text-center sm:py-10">
+    <p className="text-base font-semibold text-stone-900">
+      لا توجد انخفاضات سعرية مسجلة حاليًا
+    </p>
 
-              <p className="mt-2 text-sm text-text-muted">
-                سيظهر هذا القسم تلقائيًا عند تسجيل سعر أقل من السعر السابق.
-              </p>
-            </div>
-          )}
+    <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-text-muted">
+      نتابع تغيرات الأسعار باستمرار، وستظهر هنا أحدث الانخفاضات فور تسجيلها.
+    </p>
+
+    <Link
+      href="/products"
+      className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
+    >
+      تصفح الماكينات ←
+    </Link>
+  </div>
+)}
         </div>
       </section>
 
