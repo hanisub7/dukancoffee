@@ -584,6 +584,27 @@ export default async function Home() {
     ? getPriceMovement(heroOffer.priceHistory)
     : null;
 
+const brandDetails: Record<
+  string,
+  {
+    nationality: string;
+    advantage: string;
+  }
+> = {
+  Breville: {
+    nationality: "أسترالية",
+    advantage: "تصميم احترافي وتحكم دقيق لعشاق الإسبريسو.",
+  },
+  Philips: {
+    nationality: "هولندية",
+    advantage: "سهولة الاستخدام وتقنيات ذكية للقهوة اليومية.",
+  },
+  "De'Longhi": {
+    nationality: "إيطالية",
+    advantage: "خبرة إيطالية وتجربة مميزة لمحبي القهوة.",
+  },
+};
+
   return (
     <main dir="rtl" className="min-h-screen bg-background text-text-primary">
 
@@ -1024,37 +1045,64 @@ export default async function Home() {
     </h2>
   </div>
 
-  {popularBrands.length > 0 ? (
-    <div className="mx-auto mt-6 flex max-w-5xl flex-wrap justify-center gap-4">
-      {popularBrands.map((brand) => (
+{popularBrands.length > 0 ? (
+  <div className="mx-auto mt-8 grid max-w-4xl gap-5 sm:grid-cols-3">
+    {popularBrands.map((brand) => {
+      const details = brandDetails[brand.name];
+
+      return (
         <Link
           key={brand.id}
           href={`/brands/${brand.slug}`}
-          dir="ltr"
-          className="flex min-h-28 w-full max-w-[220px] flex-col items-center justify-center rounded-2xl border border-border bg-white px-5 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-sm"
+          className="group flex min-h-[190px] flex-col rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-md"
         >
-          {brand.logoUrl ? (
-            <img
-              src={brand.logoUrl}
-              alt={brand.name}
-              className="mb-3 h-9 max-w-[120px] object-contain"
-            />
-          ) : null}
+          <div className="flex flex-1 flex-col items-center text-center">
+            <h3
+              dir="ltr"
+              className="text-xl font-bold text-stone-900 transition-colors group-hover:text-brand"
+            >
+              {brand.name}
+            </h3>
 
-          <span className="font-semibold text-text-secondary transition-colors group-hover:text-brand">
-            {brand.name}
-          </span>
+            {details ? (
+              <>
+<p className="mt-4 text-sm font-medium leading-7 text-stone-700">
+  صناعة {details.nationality}
+</p>
+                <p className="mt-3 text-sm leading-6 text-stone-500">
+                  {details.advantage}
+                </p>
+              </>
+            ) : (
+              <p className="mt-3 text-sm leading-6 text-stone-500">
+                استعرض الماكينات وقارن الأسعار المتاحة.
+              </p>
+            )}
+          </div>
 
+          <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-4">
+            <span
+              aria-hidden="true"
+              className="text-lg text-brand transition-transform duration-200 group-hover:-translate-x-1"
+            >
+              ←
+            </span>
+
+            <span className="text-sm font-semibold text-brand">
+              عرض المنتجات
+            </span>
+          </div>
         </Link>
-      ))}
-    </div>
-  ) : (
-    <div className="mx-auto mt-7 max-w-3xl rounded-2xl border border-dashed border-border bg-surface-soft px-6 py-10 text-center">
-      <p className="font-semibold text-stone-900">
-        لا توجد علامات تجارية بمنتجات منشورة
-      </p>
-    </div>
-  )}
+      );
+    })}
+  </div>
+) : (
+  <div className="mt-8 rounded-2xl border border-dashed border-border bg-white px-6 py-10 text-center">
+    <p className="font-semibold text-stone-900">
+      لا توجد علامات تجارية بمنتجات منشورة
+    </p>
+  </div>
+)}
 </section>
 
 <section className="border-y border-border bg-white">
