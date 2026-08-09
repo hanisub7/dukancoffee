@@ -240,7 +240,7 @@ export default function ProductCard({
 ) : null}
         </div>
 
-        <div className="mt-auto border-t border-stone-100 pt-6">
+        <div className="mt-5 border-t border-stone-100 pt-5">
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-xs font-medium text-stone-500">
