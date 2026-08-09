@@ -33,7 +33,7 @@ export default function PublicFooter() {
             التصفح
           </h3>
 
-          <nav className="space-y-3 text-sm">
+          <nav className="space-y-1 text-sm">
             <Link
               href="/"
               className="block text-stone-600 transition hover:text-brand"
@@ -76,7 +76,7 @@ export default function PublicFooter() {
             معلومات
           </h3>
 
-          <nav className="space-y-3 text-sm">
+          <nav className="space-y-1 text-sm">
             <Link
               href="/about"
               className="block text-stone-600 transition hover:text-brand"
@@ -109,14 +109,10 @@ export default function PublicFooter() {
       </div>
     </div>
 
-    <div className="mt-10 border-t border-stone-200 pt-6">
-      <div className="flex flex-col items-center justify-between gap-3 text-xs text-stone-500 md:flex-row">
+    <div className="mt-7 border-t border-stone-200 pt-4">
+      <div className="flex items-center justify-end text-xs text-stone-500">
         <p>
           © {new Date().getFullYear()} DukanCoffee. جميع الحقوق محفوظة.
-        </p>
-
-        <p>
-          تحديثات مستمرة للأسعار • معلومات واضحة • تجربة موثوقة
         </p>
       </div>
     </div>
