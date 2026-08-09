@@ -896,17 +896,13 @@ export default async function Home() {
         <div className="site-container py-8 sm:py-10 lg:py-12">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-semibold text-brand">
-                تحديثات حديثة
-              </p>
+<h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+  أحدث انخفاضات الأسعار
+</h2>
 
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-                أحدث انخفاضات الأسعار
-              </h2>
-
-              <p className="mt-3 max-w-2xl leading-7 text-text-secondary">
-                أحدث الانخفاضات المسجلة فعليًا في تاريخ أسعار المنتجات.
-              </p>
+<p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary sm:text-base">
+  تابع أحدث انخفاضات أسعار ماكينات القهوة.
+</p>
             </div>
 
             <Link
