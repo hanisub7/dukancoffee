@@ -39,7 +39,7 @@ export default async function PriceDropsPage({
 
 <form
   method="get"
-  className="mb-8 flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-end"
+  className="mb-5 flex flex-col gap-2 rounded-xl border border-stone-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-center"
 >
   <label
     htmlFor="sort"
