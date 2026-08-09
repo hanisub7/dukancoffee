@@ -100,12 +100,12 @@ return (
   key={item.offerId}
   className="group overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
 >
-  <div className="flex h-64 items-center justify-center bg-[#F8F8F8] p-6">
+  <div className="flex h-72 items-center justify-center bg-[#F8F8F8] p-6">
     {item.imageUrl ? (
       <img
         src={item.imageUrl}
         alt={item.productName}
-        className="h-full w-full object-contain object-center transition-transform duration-300 sm:scale-[0.88] sm:group-hover:scale-[0.92] xl:scale-[0.82] xl:group-hover:scale-[0.86]"
+        className="h-full w-full object-contain object-center transition-transform duration-300 group-hover:scale-[1.03]"
       />
     ) : (
       <div className="flex h-full w-full items-center justify-center text-sm text-stone-400">
