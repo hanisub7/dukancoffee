@@ -1,3 +1,5 @@
+import { buildQuickSpecs } from "@/app/lib/products/queries";
+import ProductCard from "@/components/products/ProductCard";
 import { Baloo_Bhaijaan_2 } from "next/font/google";
 
 const heroFont = Baloo_Bhaijaan_2({
@@ -332,6 +334,16 @@ async function getHomepageData() {
           slug: true,
         },
       },
+      specification: {
+  select: {
+    machineType: true,
+    grinderType: true,
+    displayType: true,
+    milkSystem: true,
+    waterTankL: true,
+    pumpPressureBar: true,
+  },
+},
       images: {
         where: {
           imageType: "MAIN",
@@ -830,76 +842,29 @@ const brandDetails: Record<
         </div>
 
         {popularProducts.length > 0 ? (
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {popularProducts.map((product) => {
-              const offer = product.offers[0];
-              const image = product.images[0];
-              const movement = getPriceMovement(offer.priceHistory);
+<div className="mt-10 grid gap-6 md:grid-cols-3">
+  {popularProducts.map((product) => {
+    const offer = product.offers[0];
+    const image = product.images[0];
+    const movement = getPriceMovement(offer.priceHistory);
 
-              return (
-                <article
-                  key={product.id}
-                  className="premium-card group overflow-hidden"
-                >
-                  <div className="flex h-64 items-center justify-center overflow-hidden bg-surface-soft p-3">
-                    <ProductVisual
-                      imageUrl={image?.url}
-                      alt={image?.altText ?? product.fullName}
-                    />
-                  </div>
-
-                  <div className="p-6">
-                    <p className="text-sm text-text-muted">
-                      {product.category.nameAr}
-                    </p>
-
-                    <h3
-                      dir="ltr"
-                      className="mt-2 text-left text-xl font-semibold tracking-tight text-stone-900"
-                    >
-                      {product.fullName}
-                    </h3>
-
-                    <p
-                      dir="ltr"
-                      className="mt-1 text-left text-sm text-text-muted"
-                    >
-                      {product.brand.name}
-                    </p>
-
-                    <div className="mt-6 border-t border-border pt-5">
-                      <p className="text-xs text-text-muted">السعر الحالي</p>
-
-                      <p className="mt-1 text-2xl font-semibold text-brand">
-                        {formatPrice(
-                          offer.currentPrice,
-                          offer.currencyCode,
-                        )}
-                      </p>
-
-                      <p className="price-movement mt-3">
-                        <span
-                          className="price-movement-arrow"
-                          aria-hidden="true"
-                        >
-                          {movement.symbol}
-                        </span>
-
-                        {movement.text}
-                      </p>
-                    </div>
-
-                    <Link
-                      href={`/products/${product.slug}`}
-                      className="mt-6 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-border-strong px-4 text-sm font-semibold text-text-primary transition hover:border-brand hover:text-brand"
-                    >
-                      عرض تفاصيل السعر
-                    </Link>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+    return (
+      <ProductCard
+        key={product.id}
+        slug={product.slug}
+        name={product.fullName}
+        brandName={product.brand.name}
+        imageUrl={image?.url ?? null}
+        subtitle={product.category.nameAr}
+        price={Number(offer.currentPrice)}
+        currencyCode={offer.currencyCode}
+        priceMovement="none"
+        priceMovementText={movement.text}
+        quickSpecs={buildQuickSpecs(product.specification)}
+      />
+    );
+  })}
+</div>
         ) : (
           <div className="mt-10 rounded-2xl border border-dashed border-border bg-surface-soft px-6 py-14 text-center">
             <p className="font-semibold text-stone-900">

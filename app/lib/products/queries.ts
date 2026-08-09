@@ -122,7 +122,7 @@ type CatalogSpecification = {
     | null;
 };
 
-function buildQuickSpecs(
+export function buildQuickSpecs(
   specification: CatalogSpecification | null,
 ): ProductCatalogQuickSpec[] {
   if (!specification) {
