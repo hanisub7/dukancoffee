@@ -620,7 +620,25 @@ const brandDetails: Record<
   return (
     <main dir="rtl" className="min-h-screen bg-background text-text-primary">
 
-      <section className="border-b border-border bg-[#fffaf4]">
+
+<section
+  className="relative overflow-hidden border-b border-border bg-cover bg-left bg-no-repeat"
+  style={{
+    backgroundImage: `
+      linear-gradient(
+        to left,
+        rgba(255,250,244,0.99) 0%,
+        rgba(255,250,244,0.97) 28%,
+        rgba(255,250,244,0.88) 43%,
+        rgba(255,250,244,0.55) 56%,
+        rgba(255,250,244,0.15) 68%,
+        rgba(255,250,244,0) 78%
+      ),
+      url('/hero-coffee-machine.png')
+    `,
+  }}
+>
+
   <div className="site-container grid gap-12 py-12 sm:py-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:py-12">
     <div className="mx-auto w-full max-w-3xl text-center lg:pt-10">
 <h1
@@ -641,7 +659,7 @@ const brandDetails: Record<
 <form
   action="/products"
   method="get"
-  className="mx-auto mt-9 w-full max-w-2xl"
+  className="mx-auto mt-9 w-full max-w-[560px]"
 >
   <label htmlFor="homepage-search" className="sr-only">
     ابحث عن ماكينة قهوة
@@ -727,94 +745,6 @@ const brandDetails: Record<
     </div>
     </div>
 
-    <div className="mx-auto w-full max-w-lg">
-      <div className="group overflow-hidden rounded-[2.25rem] border border-orange-100/80 bg-white p-6 shadow-[0_18px_60px_rgba(28,25,23,0.08)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(28,25,23,0.12)] sm:p-8">
-<div className="relative h-[340px] overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-orange-50 via-white to-stone-100 sm:h-[380px]">
-  <HeroProductVisual
-    imageUrl={heroImage?.url}
-    alt={
-      heroImage?.altText ??
-      heroProduct?.fullName ??
-      "ماكينة قهوة"
-    }
-  />
-
-  {heroProduct ? (
-    <div className="absolute right-5 top-5 rounded-full border border-brand-border bg-brand-soft px-4 py-2 text-sm font-semibold text-brand shadow-sm backdrop-blur">
-      ماكينة مختارة
-    </div>
-  ) : null}
-</div>
-
-        <div className="pt-6">
-          {heroProduct ? (
-            <>
-
-              <div className="flex items-end justify-between gap-5">
-                <div className="min-w-0">
-                  <p
-                    dir="ltr"
-                    className="truncate text-left text-lg font-semibold text-stone-900"
-                  >
-                    {heroProduct.fullName}
-                  </p>
-
-                  <p className="mt-1 text-sm text-text-muted">
-                    {heroProduct.category.nameAr}
-                  </p>
-                </div>
-
-                {heroOffer ? (
-                  <div className="shrink-0 text-left">
-                    <p className="text-xs text-text-muted">
-                      السعر الحالي
-                    </p>
-
-                    <p className="mt-1 text-xl font-bold text-brand">
-                      {formatPrice(
-                        heroOffer.currentPrice,
-                        heroOffer.currencyCode,
-                      )}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-
-              {heroMovement ? (
-                <p className="price-movement mt-4">
-                  <span
-                    className="price-movement-arrow"
-                    aria-hidden="true"
-                  >
-                    {heroMovement.symbol}
-                  </span>
-
-                  {heroMovement.text}
-                </p>
-              ) : null}
-
-              <Link
-                href={`/products/${heroProduct.slug}`}
-                className="mt-5 inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-brand px-6 text-base font-semibold tracking-wide !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-lg"
-              >
-                عرض تفاصيل الماكينة      
-              </Link>
-            </>
-          ) : (
-            <div className="py-3 text-center">
-              <p className="font-semibold text-stone-900">
-                لا توجد منتجات منشورة بعد
-              </p>
-
-              <p className="mt-2 text-sm leading-6 text-text-muted">
-                ستظهر الماكينة المختارة هنا تلقائيًا بعد نشر أول منتج
-                وإضافة سعر له.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
 
   </div>
 </section>
