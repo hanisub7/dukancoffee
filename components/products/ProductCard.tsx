@@ -294,7 +294,7 @@ export default function ProductCard({
   aria-hidden="true"
   className="text-base transition-transform duration-200 group-hover:translate-x-1"
 >
-  →
+  ←
 </span>
           </Link>
         </div>
