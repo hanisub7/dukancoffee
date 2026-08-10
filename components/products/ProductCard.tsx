@@ -283,7 +283,7 @@ export default function ProductCard({
           )}
         </div>
 
-        <div className="pt-4">
+        <div className="mt-auto pt-4">
           <Link
             href={productUrl}
             className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-brand px-5 text-sm font-bold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
