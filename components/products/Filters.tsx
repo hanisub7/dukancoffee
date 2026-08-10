@@ -133,34 +133,6 @@ export default function Filters({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3">
-          <button
-            type="button"
-            onClick={() =>
-              setShowAdditionalOptions((current) => !current)
-            }
-            aria-expanded={showAdditionalOptions}
-            aria-controls="additional-filter-options"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-black/60 transition-colors hover:text-black"
-          >
-            <span>خيارات متقدمة</span>
-
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              fill="none"
-              className={`h-3.5 w-3.5 transition-transform ${
-                showAdditionalOptions ? "rotate-180" : ""
-              }`}
-            >
-              <path
-                d="m6 8 4 4 4-4"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
 
           {hasSelectedFilters ? (
             <a
@@ -172,18 +144,7 @@ export default function Filters({
           ) : null}
         </div>
 
-        {showAdditionalOptions ? (
-          <div
-            id="additional-filter-options"
-            className="mt-3 rounded-xl bg-[#fafaf9] px-4 py-3"
-          >
-            <p className="text-xs leading-6 text-black/55">
-              ستظهر هنا لاحقًا خيارات إضافية مثل نظام
-              الحليب والمطحنة ونطاق السعر، دون ازدحام
-              الصفحة الرئيسية للفلاتر.
-            </p>
-          </div>
-        ) : null}
+
       </form>
     </div>
   );

@@ -463,9 +463,9 @@ specification: {
         ],
 
         select: {
-          slug: true,
-          nameEn: true,
-        },
+  slug: true,
+  nameAr: true,
+},
       }),
     ]);
 
@@ -568,9 +568,9 @@ return {
     })),
 
     categories: databaseCategories.map((category) => ({
-      value: category.slug,
-      label: category.nameEn,
-    })),
+  value: category.slug,
+  label: category.nameAr,
+})),
 
     currentPage,
     totalPages,
