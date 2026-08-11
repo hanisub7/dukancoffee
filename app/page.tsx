@@ -1,4 +1,5 @@
 import { buildQuickSpecs } from "@/app/lib/products/queries";
+import { getPriceDrops } from "@/app/lib/price-drops/queries";
 import ProductCard from "@/components/products/ProductCard";
 import { Baloo_Bhaijaan_2 } from "next/font/google";
 
@@ -305,245 +306,190 @@ async function getHomepageData() {
 
   const [
     products,
-    recentOffers,
+    priceDropsResult,
     brands,
     totalProducts,
     totalOffers,
   ] = await Promise.all([
-  prisma.product.findMany({
-    where: publishedProductWhere,
-    orderBy: {
-      updatedAt: "desc",
-    },
-    take: 12,
-    select: {
-      id: true,
-      slug: true,
-      fullName: true,
-      model: true,
-      updatedAt: true,
-      brand: {
-        select: {
-          name: true,
-          slug: true,
-        },
+    prisma.product.findMany({
+      where: publishedProductWhere,
+      orderBy: {
+        updatedAt: "desc",
       },
-      category: {
-        select: {
-          nameAr: true,
-          slug: true,
-        },
-      },
-      specification: {
-  select: {
-    machineType: true,
-    grinderType: true,
-    displayType: true,
-    milkSystem: true,
-    waterTankL: true,
-    pumpPressureBar: true,
-  },
-},
-      images: {
-        where: {
-          imageType: "MAIN",
-        },
-        orderBy: {
-          sortOrder: "asc",
-        },
-        take: 1,
-        select: {
-          url: true,
-          altText: true,
-        },
-      },
-      offers: {
-        where: {
-          inStock: true,
-          retailer: {
-            active: true,
-            deletedAt: null,
-            country: {
-              code: "SA",
-              enabled: true,
-            },
-          },
-        },
-        orderBy: {
-          currentPrice: "asc",
-        },
-        take: 1,
-        select: {
-          id: true,
-          currentPrice: true,
-          currencyCode: true,
-          checkedAt: true,
-          retailer: {
-            select: {
-              name: true,
-              slug: true,
-            },
-          },
-          priceHistory: {
-            orderBy: {
-              checkedAt: "desc",
-            },
-            take: 2,
-            select: {
-              price: true,
-              checkedAt: true,
-            },
-          },
-        },
-      },
-    },
-  }),
+      take: 12,
+      select: {
+        id: true,
+        slug: true,
+        fullName: true,
+        model: true,
+        updatedAt: true,
 
-  prisma.offer.findMany({
-    where: {
-      inStock: true,
-      retailer: {
-        active: true,
-        deletedAt: null,
-        country: {
-          code: "SA",
-          enabled: true,
-        },
-      },
-      product: publishedProductWhere,
-      priceHistory: {
-        some: {},
-      },
-    },
-    orderBy: {
-      checkedAt: "desc",
-    },
-    take: 24,
-    select: {
-      id: true,
-      currentPrice: true,
-      currencyCode: true,
-      checkedAt: true,
-      product: {
-        select: {
-          slug: true,
-          fullName: true,
-          brand: {
-            select: {
-              name: true,
-            },
+        brand: {
+          select: {
+            name: true,
+            slug: true,
           },
         },
-      },
-      retailer: {
-        select: {
-          name: true,
-        },
-      },
-      priceHistory: {
-        orderBy: {
-          checkedAt: "desc",
-        },
-        take: 2,
-        select: {
-          price: true,
-          checkedAt: true,
-        },
-      },
-    },
-  }),
 
-  prisma.brand.findMany({
-    where: {
-      active: true,
-      deletedAt: null,
-      products: {
-        some: {
-          status: "PUBLISHED",
-          deletedAt: null,
+        category: {
+          select: {
+            nameAr: true,
+            slug: true,
+          },
         },
-      },
-    },
-    orderBy: {
-      name: "asc",
-    },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      logoUrl: true,
-      _count: {
-        select: {
-          products: {
-            where: {
-              status: "PUBLISHED",
+
+        specification: {
+          select: {
+            machineType: true,
+            grinderType: true,
+            displayType: true,
+            milkSystem: true,
+            waterTankL: true,
+            pumpPressureBar: true,
+          },
+        },
+
+        images: {
+          where: {
+            imageType: "MAIN",
+          },
+          orderBy: {
+            sortOrder: "asc",
+          },
+          take: 1,
+          select: {
+            url: true,
+            altText: true,
+          },
+        },
+
+        offers: {
+          where: {
+            inStock: true,
+            retailer: {
+              active: true,
               deletedAt: null,
+              country: {
+                code: "SA",
+                enabled: true,
+              },
+            },
+          },
+          orderBy: {
+            currentPrice: "asc",
+          },
+          take: 1,
+          select: {
+            id: true,
+            currentPrice: true,
+            currencyCode: true,
+            checkedAt: true,
+
+            retailer: {
+              select: {
+                name: true,
+                slug: true,
+              },
+            },
+
+            priceHistory: {
+              orderBy: {
+                checkedAt: "desc",
+              },
+              take: 2,
+              select: {
+                price: true,
+                checkedAt: true,
+              },
             },
           },
         },
       },
-    },
-  }),
+    }),
 
-  prisma.product.count({
-    where: publishedProductWhere,
-  }),
+    getPriceDrops({
+      page: 1,
+      sort: "latest",
+    }),
 
-  prisma.offer.count({
-    where: {
-      inStock: true,
-      retailer: {
+    prisma.brand.findMany({
+      where: {
         active: true,
         deletedAt: null,
-        country: {
-          code: "SA",
-          enabled: true,
+        products: {
+          some: {
+            status: "PUBLISHED",
+            deletedAt: null,
+          },
         },
       },
-      product: publishedProductWhere,
-    },
-  }),
-]);
+      orderBy: {
+        name: "asc",
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logoUrl: true,
 
+        _count: {
+          select: {
+            products: {
+              where: {
+                status: "PUBLISHED",
+                deletedAt: null,
+              },
+            },
+          },
+        },
+      },
+    }),
+
+    prisma.product.count({
+      where: publishedProductWhere,
+    }),
+
+    prisma.offer.count({
+      where: {
+        inStock: true,
+
+        retailer: {
+          active: true,
+          deletedAt: null,
+          country: {
+            code: "SA",
+            enabled: true,
+          },
+        },
+
+        product: publishedProductWhere,
+      },
+    }),
+  ]);
 
   const productsWithOffers = products.filter(
     (product) => product.offers.length > 0,
   );
 
   const heroProduct =
-    productsWithOffers.find((product) => product.images.length > 0) ??
+    productsWithOffers.find(
+      (product) => product.images.length > 0,
+    ) ??
     productsWithOffers[0] ??
     products[0] ??
     null;
 
   const popularProducts = productsWithOffers.slice(0, 3);
 
-  const latestPriceDrops = recentOffers
-    .map((offer) => {
-      if (offer.priceHistory.length < 2) {
-        return null;
-      }
-
-      const latestPrice = Number(offer.priceHistory[0].price.toString());
-      const previousPrice = Number(offer.priceHistory[1].price.toString());
-
-      if (latestPrice >= previousPrice) {
-        return null;
-      }
-
-      return {
-        ...offer,
-        latestPrice,
-        previousPrice,
-        difference: previousPrice - latestPrice,
-      };
-    })
-    .filter((offer): offer is NonNullable<typeof offer> => offer !== null)
-    .slice(0, 3);
+  const latestPriceDrops =
+    priceDropsResult.items.slice(0, 3);
 
   const popularBrands = brands
     .sort((firstBrand, secondBrand) => {
-      return secondBrand._count.products - firstBrand._count.products;
+      return (
+        secondBrand._count.products -
+        firstBrand._count.products
+      );
     })
     .slice(0, 6);
 
@@ -552,6 +498,7 @@ async function getHomepageData() {
     popularProducts,
     latestPriceDrops,
     popularBrands,
+
     statistics: {
       products: totalProducts,
       brands: brands.length,
@@ -831,82 +778,82 @@ const brandDetails: Record<
 
           {latestPriceDrops.length > 0 ? (
             <div className="mt-10 grid gap-5 lg:grid-cols-3">
-              {latestPriceDrops.map((item) => (
-                <article
-                  key={item.id}
-                  className="rounded-2xl border border-border bg-white p-6"
-                >
-                  <p
-                    dir="ltr"
-                    className="text-left font-semibold text-stone-900"
-                  >
-                    {item.product.fullName}
-                  </p>
+{latestPriceDrops.map((item) => (
+  <article
+    key={item.offerId}
+    className="rounded-2xl border border-border bg-white p-6"
+  >
+    <p
+      dir="ltr"
+      className="text-left font-semibold text-stone-900"
+    >
+      {item.productName}
+    </p>
 
-                  <p
-                    dir="ltr"
-                    className="mt-1 text-left text-sm text-text-muted"
-                  >
-                    {item.product.brand.name}
-                  </p>
+    <p
+      dir="ltr"
+      className="mt-1 text-left text-sm text-text-muted"
+    >
+      {item.brandName}
+    </p>
 
-                  <div className="mt-6 flex items-end justify-between gap-5">
-                    <div>
-                      <p className="text-xs text-text-muted">
-                        السعر السابق
-                      </p>
+    <div className="mt-6 flex items-end justify-between gap-5">
+      <div>
+        <p className="text-xs text-text-muted">
+          السعر السابق
+        </p>
 
-                      <p className="mt-1 text-sm text-text-muted line-through">
-                        {formatPrice(
-                          item.previousPrice,
-                          item.currencyCode,
-                        )}
-                      </p>
-                    </div>
+        <p className="mt-1 text-sm text-text-muted line-through">
+          {formatPrice(
+            item.previousPrice,
+            item.currencyCode,
+          )}
+        </p>
+      </div>
 
-                    <div className="text-left">
-                      <p className="text-xs text-text-muted">
-                        السعر الحالي
-                      </p>
+      <div className="text-left">
+        <p className="text-xs text-text-muted">
+          السعر الحالي
+        </p>
 
-                      <p className="mt-1 text-xl font-semibold text-brand">
-                        {formatPrice(
-                          item.latestPrice,
-                          item.currencyCode,
-                        )}
-                      </p>
-                    </div>
-                  </div>
+        <p className="mt-1 text-xl font-semibold text-brand">
+          {formatPrice(
+            item.currentPrice,
+            item.currencyCode,
+          )}
+        </p>
+      </div>
+    </div>
 
-                  <div className="mt-6 border-t border-border pt-4">
-                    <p className="price-movement">
-                      <span
-                        className="price-movement-arrow"
-                        aria-hidden="true"
-                      >
-                        ↓
-                      </span>
+    <div className="mt-6 border-t border-border pt-4">
+      <p className="price-movement">
+        <span
+          className="price-movement-arrow"
+          aria-hidden="true"
+        >
+          ↓
+        </span>
 
-                      أقل من السعر السابق بـ{" "}
-                      {formatPrice(
-                        item.difference,
-                        item.currencyCode,
-                      )}
-                    </p>
+        أقل من السعر السابق بـ{" "}
+        {formatPrice(
+          item.savingAmount,
+          item.currencyCode,
+        )}
+      </p>
 
-                    <p className="mt-2 text-xs text-text-muted">
-                      لدى {item.retailer.name}
-                    </p>
-                  </div>
+      <p className="mt-2 text-xs text-text-muted">
+        لدى {item.retailerName}
+      </p>
+    </div>
 
-                  <Link
-                    href={`/products/${item.product.slug}`}
-                    className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
-                  >
-                    عرض سجل السعر ←
-                  </Link>
-                </article>
-              ))}
+    <Link
+      href={`/products/${item.productSlug}`}
+      className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
+    >
+      عرض سجل السعر ←
+    </Link>
+  </article>
+))}
             </div>
 ) : (
   <div className="mt-8 rounded-2xl border border-border bg-white px-6 py-8 text-center sm:py-10">
