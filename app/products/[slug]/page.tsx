@@ -1053,9 +1053,16 @@ const bestConditionalOfferId =
     ? lowestConditionalOfferIds[0]
     : null;
 
+const hasAnyConditionalPromotion = rankedOffers.some((offer) =>
+  offer.promotions.some(
+    (promotion) =>
+      promotion.discountPercent !== null ||
+      promotion.discountAmount !== null,
+  ),
+);
+
 const productSubtitle =
     product.modelNumber ??
-    product.model ??
     product.productFamily.name;
 
   const specificationSections = buildSpecificationSections(
@@ -1197,6 +1204,21 @@ const relatedProducts = await getRelatedProducts({
   >
     {product.fullName}
   </h1>
+  <div
+  dir="ltr"
+  className="mt-3 flex flex-wrap items-center justify-start gap-x-3 gap-y-1 text-left text-sm text-stone-500"
+>
+  <span className="font-semibold text-stone-700">
+    {product.brand.name}
+  </span>
+
+  {product.model ? (
+    <>
+      <span className="text-stone-300">•</span>
+      <span>{product.modelNumber}</span>
+    </>
+  ) : null}
+</div>
 </div>
 
   {bestOffer ? (
@@ -1335,9 +1357,7 @@ bestConditionalPrice !== null ? (
         لا يوجد سعر متاح حاليًا
       </p>
 
-      <p className="mt-2 text-sm leading-6 text-black/50">
-        سيظهر السعر هنا عند إضافة عرض متاح لهذا المنتج.
-      </p>
+
     </div>
   )}
 </div>
@@ -1441,98 +1461,83 @@ bestConditionalPrice !== null ? (
       : "mt-8"
   }`}
 >
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px]">
-          <thead className="border-b border-stone-200 bg-[#fafaf9]">
-            <tr>
-              <th className="px-5 py-4 text-right text-sm font-semibold text-stone-700">
-                المتجر
-              </th>
+<div className="overflow-x-auto">
+  <table className="w-full min-w-[700px] table-fixed">
+    <thead className="border-b border-stone-200 bg-[#fafaf9]">
+      <tr>
+        <th className="w-1/3 px-5 py-4 text-right text-sm font-semibold text-stone-700">
+          المتجر
+        </th>
 
-<th className="px-5 py-4 text-center text-sm font-medium text-stone-700 align-middle">
-  السعر الحالي
-</th>
+        <th className="w-1/3 px-5 py-4 text-center text-sm font-semibold text-stone-700">
+          السعر
+        </th>
 
-              <th className="px-5 py-4 text-center text-sm font-medium text-stone-700 align-middle">
-                العرض المشروط
-              </th>
+        {hasAnyConditionalPromotion ? (
+          <th className="px-5 py-4 text-right text-sm font-semibold text-stone-700">
+            العرض المشروط
+          </th>
+        ) : null}
 
-              <th className="px-5 py-4 text-right text-sm font-semibold text-stone-700">
-                الشرط
-              </th>
+        <th className="px-5 py-4 text-center text-sm font-semibold text-stone-700">
+          زيارة المتجر
+        </th>
+      </tr>
+    </thead>
 
-              <th className="px-5 py-4 text-right text-sm font-semibold text-stone-700">
-                آخر تحقق
-              </th>
+    <tbody>
+      {rankedOffers.map((offer) => {
+        const retailerUrl =
+          offer.affiliateUrl ?? offer.productUrl;
 
-<th className="px-5 py-4 text-center text-sm font-semibold text-stone-700">
-  زيارة المتجر
-</th>
-            </tr>
-          </thead>
+        const primaryPromotion =
+          offer.promotions.find(
+            (promotion) =>
+              promotion.discountPercent !== null ||
+              promotion.discountAmount !== null,
+          ) ?? null;
 
-          <tbody>
-            {rankedOffers.map((offer) => {
-              const retailerUrl =
-                offer.affiliateUrl ?? offer.productUrl;
+const conditionalPrice = primaryPromotion
+  ? getConditionalPromotionPrice(
+      offer.currentPrice,
+      primaryPromotion,
+    )
+  : null;
 
-              const primaryPromotion =
-                offer.promotions.find(
-                  (promotion) =>
-                    promotion.discountPercent !== null ||
-                    promotion.discountAmount !== null,
-                ) ?? null;
+return (
+          <tr
+            key={offer.id}
+            className="border-b border-stone-100 last:border-b-0"
+          >
+            <td className="px-6 py-6 align-middle">
+              <p className="text-xl font-bold text-stone-900">
+                {offer.retailer.name}
+              </p>
 
-              const conditionalPrice = primaryPromotion
-                ? getConditionalPromotionPrice(
-                    offer.currentPrice,
-                    primaryPromotion,
-                  )
-                : null;
+              {offer.id === bestOfferId ? (
+                <div className="mt-3">
+                  <span className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-[#C85A1A]">
+                    أفضل سعر متاح
+                  </span>
+                </div>
+              ) : null}
 
-              const hasLowestPublicPrice =
-                !allPublicPricesEqual &&
-                lowestPublicPrice !== null &&
-                Number(offer.currentPrice) ===
-                  lowestPublicPrice;
+              {offer.id === bestConditionalOfferId ? (
+                <div className="mt-3">
+                  <span className="inline-flex rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-semibold text-stone-600">
+                    أفضل سعر مشروط
+                  </span>
+                </div>
+              ) : null}
+            </td>
 
-              const hasLowestEligiblePrice =
-                !allEligiblePricesEqual &&
-                lowestEligiblePrice !== null &&
-                conditionalPrice !== null &&
-                conditionalPrice === lowestEligiblePrice;
-
-              return (
-<tr
-  key={offer.id}
-  className="border-b border-stone-200 transition-colors last:border-b-0 hover:bg-[#fcfcfb]"
->
-                  <td className="px-6 py-6 align-middle">
-           <p className="text-xl font-bold text-stone-900">
-  {offer.retailer.name}
-</p>         
-
-{offer.id === bestOfferId ? (
-  <span className="mt-3 inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-[#C85A1A]">
-    أفضل سعر متاح
-  </span>
-) : null}
-
-{offer.id === bestConditionalOfferId ? (
-  <div className="mt-3">
-    <span className="inline-flex rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-semibold text-stone-700">
-      أفضل سعر مشروط
-    </span>
-  </div>
-) : null}
-                  </td>
-
-<td className="px-4 py-4">
+<td className="px-6 py-6 text-center align-middle">
   {offer.originalPrice &&
-  Number(offer.originalPrice) > Number(offer.currentPrice) ? (
+  Number(offer.originalPrice) >
+    Number(offer.currentPrice) ? (
     <p
       dir="ltr"
-      className="mb-1 text-sm font-medium text-stone-400 line-through"
+      className="mb-1 text-center text-sm font-medium text-stone-400 line-through"
     >
       {formatPrice(
         offer.originalPrice,
@@ -1543,7 +1548,7 @@ bestConditionalPrice !== null ? (
 
   <p
     dir="ltr"
-    className="text-2xl font-extrabold tracking-tight text-stone-900"
+    className="text-center text-2xl font-bold text-stone-900"
   >
     {formatPrice(
       offer.currentPrice,
@@ -1552,156 +1557,74 @@ bestConditionalPrice !== null ? (
   </p>
 </td>
 
-                <td className="px-4 py-4">
-  {conditionalPrice !== null ? (
-    <p
-      dir="ltr"
-      className="text-2xl font-extrabold tracking-tight text-[#C85A1A]"
-    >
-      {formatPrice(
-        conditionalPrice,
-        offer.currencyCode,
-      )}
-    </p>
-  ) : (
-    <span className="block text-center text-sm text-stone-400">
-      لا يوجد
-    </span>
-  )}
-</td>
-
-<td className="px-6 py-6">
-  {primaryPromotion ? (
-    <div className="max-w-[260px] space-y-1">
-      <p className="text-sm font-medium text-stone-700">
-        {primaryPromotion.bankName
-          ? `بطاقات ${primaryPromotion.bankName} المؤهلة`
-          : primaryPromotion.title}
-      </p>
-
-      {primaryPromotion.discountPercent !== null ? (
-        <p className="mt-1 text-xs text-stone-500">
-          خصم {primaryPromotion.discountPercent}%
-        </p>
-      ) : null}
-
-      {primaryPromotion.endsAt ? (
-        <p className="mt-1 text-xs text-stone-400">
-          حتى {formatDate(primaryPromotion.endsAt)}
-        </p>
-      ) : null}
-
-      <details className="mt-3">
-        <summary className="cursor-pointer text-sm font-medium text-[#C85A1A] hover:underline">
-          عرض التفاصيل والشروط
-        </summary>
-
-        <div className="mt-3 space-y-3 rounded-xl border border-stone-200 bg-stone-50 p-4">
-          {offer.promotions.map((promotion) => (
-            <div
-              key={promotion.id}
-              className="border-b border-stone-200 pb-3 last:border-b-0 last:pb-0"
-            >
-              <p className="text-sm font-semibold text-stone-900">
-                {promotion.title}
-              </p>
-
-              {promotion.description ? (
-                <p className="mt-1 text-xs leading-5 text-stone-600">
-                  {promotion.description}
-                </p>
-              ) : null}
-
-              {promotion.bankName ? (
-                <p className="mt-2 text-xs text-stone-600">
-                  البنك: {promotion.bankName}
-                </p>
-              ) : null}
-
-              {promotion.couponCode ? (
-                <p
-                  dir="ltr"
-                  className="mt-1 text-left text-xs font-semibold text-[#C85A1A]"
-                >
-                  رمز الخصم: {promotion.couponCode}
-                </p>
-              ) : null}
-
-              {promotion.discountAmount ? (
-                <p className="mt-1 text-xs text-stone-600">
-                  خصم{" "}
-                  {formatPrice(
-                    promotion.discountAmount,
-                    offer.currencyCode,
-                  )}
-                </p>
-              ) : null}
-
-              {promotion.cashbackPercent !== null ? (
-                <p className="mt-1 text-xs text-stone-600">
-                  استرداد نقدي {promotion.cashbackPercent}%
-                </p>
-              ) : null}
-
-              {promotion.cashbackAmount ? (
-                <p className="mt-1 text-xs text-stone-600">
-                  استرداد{" "}
-                  {formatPrice(
-                    promotion.cashbackAmount,
-                    offer.currencyCode,
-                  )}
-                </p>
-              ) : null}
-
-              {promotion.installmentMonths ? (
-                <p className="mt-1 text-xs text-stone-600">
-                  تقسيط لمدة {promotion.installmentMonths} شهرًا
-                </p>
-              ) : null}
-
-              {promotion.freeGiftDescription ? (
-                <p className="mt-1 text-xs text-stone-600">
-                  الهدية: {promotion.freeGiftDescription}
-                </p>
-              ) : null}
-
-              {promotion.terms ? (
-                <p className="mt-2 text-xs leading-5 text-stone-500">
-                  الشروط: {promotion.terms}
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      </details>
-    </div>
-  ) : (
-    <span className="text-sm text-stone-400">
-      —
-    </span>
-  )}
-</td>
-
-                  <td className="px-6 py-6 text-sm text-stone-500">
-                    {formatDate(offer.checkedAt)}
-                  </td>
-
-                  <td className="px-6 py-6 text-center">
-                    <a
-                      href={retailerUrl}
-                      target="_blank"
-                      rel="sponsored noopener noreferrer"
-                      className="inline-flex h-11 items-center justify-center rounded-xl bg-brand px-6 text-sm font-semibold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+            {hasAnyConditionalPromotion ? (
+              <td className="px-6 py-6 align-middle">
+                {conditionalPrice !== null &&
+                primaryPromotion ? (
+                  <div>
+                    <p
+                      dir="ltr"
+                      className="text-xl font-bold text-[#C85A1A]"
                     >
-                      الانتقال للمتجر
-                    </a>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                      {formatPrice(
+                        conditionalPrice,
+                        offer.currencyCode,
+                      )}
+                    </p>
+
+                    {primaryPromotion.discountPercent !==
+                    null ? (
+                      <p className="mt-1 text-xs text-stone-500">
+                        خصم{" "}
+                        {
+                          primaryPromotion.discountPercent
+                        }
+                        %
+                      </p>
+                    ) : null}
+
+                    {primaryPromotion.bankName ? (
+                      <p className="mt-1 text-xs text-stone-600">
+                        مع بطاقات{" "}
+                        {primaryPromotion.bankName}
+                      </p>
+                    ) : null}
+
+                    {primaryPromotion.endsAt ? (
+                      <p className="mt-1 text-xs text-stone-400">
+                        حتى{" "}
+                        {formatDate(
+                          primaryPromotion.endsAt,
+                        )}
+                      </p>
+                    ) : null}
+
+
+                  </div>
+                ) : (
+                  <span className="text-sm text-stone-400">
+                    —
+                  </span>
+                )}
+              </td>
+            ) : null}
+
+            <td className="px-6 py-6 text-center align-middle">
+              <a
+                href={retailerUrl}
+                target="_blank"
+                rel="sponsored noopener noreferrer"
+                className="inline-flex h-11 items-center justify-center rounded-xl bg-brand px-6 text-sm font-semibold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+              >
+                الانتقال للمتجر
+              </a>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
 
       <div className="border-t border-stone-100 bg-stone-50 px-5 py-4">
         <p className="text-xs leading-5 text-stone-500">
@@ -1719,9 +1642,6 @@ bestConditionalPrice !== null ? (
         لا توجد عروض متاحة
       </h3>
 
-      <p className="mt-2 text-sm text-black/50">
-        ستظهر عروض المتاجر هنا عند توفرها.
-      </p>
     </div>
   )}
 </section>
