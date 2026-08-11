@@ -294,12 +294,24 @@ function buildSpecificationSections(
         hasSpecificationValue(specification.powerW)
           ? { label: "القدرة الكهربائية", value: formatSpecificationNumber(specification.powerW as number, "واط", 0) }
           : null,
-        hasSpecificationValue(specification.voltage)
-          ? { label: "الجهد الكهربائي", value: specification.voltage as string }
-          : null,
-        hasSpecificationValue(specification.frequencyHz)
-          ? { label: "التردد", value: formatSpecificationNumber(specification.frequencyHz as number, "هرتز", 0) }
-          : null,
+hasSpecificationValue(specification.voltage)
+  ? {
+      label: "الجهد الكهربائي",
+      value: (specification.voltage as string)
+        .replace(/\s*V$/i, " فولت")
+        .replace(/\s*VAC$/i, " فولت"),
+    }
+  : null,
+hasSpecificationValue(specification.frequencyHz)
+  ? {
+      label: "التردد",
+      value: formatSpecificationNumber(
+        specification.frequencyHz as number,
+        "هرتز",
+        0,
+      ),
+    }
+  : null,
       ]),
     },
     {
@@ -1475,7 +1487,7 @@ bestConditionalPrice !== null ? (
 
         {hasAnyConditionalPromotion ? (
           <th className="px-5 py-4 text-right text-sm font-semibold text-stone-700">
-            العرض المشروط
+            عرض خاص
           </th>
         ) : null}
 
@@ -1751,7 +1763,7 @@ return (
         </section>
       ) : null}
 
-     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
   {relatedProducts.length > 0 ? (
     <div>
       <div className="mb-7 text-center">
@@ -1765,16 +1777,16 @@ return (
       </div>
 
       <div
-  className={`grid gap-5 ${
-    relatedProducts.length === 1
-      ? "mx-auto max-w-sm grid-cols-1"
-      : relatedProducts.length === 2
-        ? "mx-auto max-w-2xl grid-cols-1 sm:grid-cols-2"
-        : relatedProducts.length === 3
-          ? "mx-auto max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-          : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
-  }`}
->
+        className={`grid gap-5 ${
+          relatedProducts.length === 1
+            ? "mx-auto max-w-sm grid-cols-1"
+            : relatedProducts.length === 2
+              ? "mx-auto max-w-2xl grid-cols-1 sm:grid-cols-2"
+              : relatedProducts.length === 3
+                ? "mx-auto max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+        }`}
+      >
         {relatedProducts.map((item) => (
           <Link
             key={item.id}
