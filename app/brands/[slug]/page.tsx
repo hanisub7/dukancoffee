@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import ProductGrid from "@/components/products/ProductGrid";
 import { prisma } from "@/app/lib/prisma";
+import { buildQuickSpecs } from "@/app/lib/products/queries";
 
 type BrandPageProps = {
   params: Promise<{
@@ -65,6 +66,16 @@ export default async function BrandPage({
           slug: true,
           fullName: true,
           model: true,
+          specification: {
+  select: {
+    machineType: true,
+    grinderType: true,
+    displayType: true,
+    milkSystem: true,
+    waterTankL: true,
+    pumpPressureBar: true,
+  },
+},
           images: {
             where: {
               imageType: "MAIN",
@@ -140,21 +151,22 @@ export default async function BrandPage({
       }
     }
 
-    return {
-      id: product.id,
-      slug: product.slug,
-      name: product.fullName,
-      brandName: brand.name,
-      imageUrl: product.images[0]?.url ?? null,
-      subtitle: product.model,
-      price: offer?.currentPrice
-  ? offer.currentPrice.toString()
-  : null,
-      currencyCode: offer?.currencyCode ?? "SAR",
-      priceMovement,
-      priceMovementText,
-      isLowestPrice: false,
-    };
+return {
+  id: product.id,
+  slug: product.slug,
+  name: product.fullName,
+  brandName: brand.name,
+  imageUrl: product.images[0]?.url ?? null,
+  subtitle: product.model,
+  price: offer
+    ? Number(offer.currentPrice.toString())
+    : undefined,
+  currencyCode: offer?.currencyCode ?? "SAR",
+  priceMovement,
+  priceMovementText,
+  isLowestPrice: false,
+  quickSpecs: buildQuickSpecs(product.specification),
+};
   });
 
   return (
@@ -162,24 +174,30 @@ export default async function BrandPage({
       dir="rtl"
       className="min-h-screen bg-white text-stone-900"
     >
-      <section className="border-b border-stone-200 bg-stone-50">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-          <p className="text-sm font-semibold text-orange-700">
-            العلامة التجارية
-          </p>
+<section className="border-b border-stone-200 bg-[#FFF9F4]">
+  <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+    <div className="max-w-3xl">
+      <p className="text-sm font-semibold text-[#C85A1A]">
+        العلامة التجارية
+      </p>
 
-          <h1
-            dir="ltr"
-            className="mt-3 text-left text-3xl font-bold tracking-tight sm:text-4xl"
-          >
-            {brand.name}
-          </h1>
+      <h1
+        dir="ltr"
+        className="mt-2 text-left text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl"
+      >
+        {brand.name}
+      </h1>
 
-          <p className="mt-3 text-stone-600">
-            {products.length} منتج منشور
-          </p>
-        </div>
-      </section>
+      <p className="mt-3 text-sm font-medium text-stone-500 sm:text-base">
+        {products.length === 1
+          ? "آلة واحدة "
+          : products.length === 2
+            ? "آلتان"
+            : `${products.length} آلات منشورة`}
+      </p>
+    </div>
+  </div>
+</section>
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         {products.length > 0 ? (

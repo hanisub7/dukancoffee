@@ -130,10 +130,10 @@ export default function ProductCard({
     price !== undefined;
 
   return (
-    <article
-      dir="rtl"
-      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl"
-    >
+<article
+  dir="rtl"
+  className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl"
+>
       {isLowestPrice ? (
         <div className="absolute right-4 top-4 z-10">
           <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-bold text-[#C85A1A] shadow-sm">
@@ -267,25 +267,25 @@ export default function ProductCard({
     </div>
   </div>
 
-  {movementText ? (
-    <div className="mt-3 flex min-h-8 items-center gap-2 rounded-lg bg-stone-50 px-3 py-1.5 text-xs text-stone-600">
-      {movementSymbol ? (
-        <span
-          aria-hidden="true"
-          className="text-base font-semibold leading-none text-stone-700"
-        >
-          {movementSymbol}
-        </span>
-      ) : null}
+{movementText ? (
+  <div className="mt-3 flex min-h-8 items-center gap-2 rounded-lg bg-stone-50 px-3 py-1.5 text-xs text-stone-600">
+    {movementSymbol ? (
+      <span
+        aria-hidden="true"
+        className="text-base font-semibold leading-none text-stone-700"
+      >
+        {movementSymbol}
+      </span>
+    ) : null}
 
-      <span>{movementText}</span>
-    </div>
-  ) : (
-    <div
-      className="mt-3 min-h-11"
-      aria-hidden="true"
-    />
-  )}
+    <span>{movementText}</span>
+  </div>
+) : hasPrice ? (
+  <div
+    className="mt-3 min-h-11"
+    aria-hidden="true"
+  />
+) : null}
 </div>
         <div className="mt-auto pt-4">
           <Link
