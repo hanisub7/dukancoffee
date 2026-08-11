@@ -34,8 +34,11 @@ export default async function CategoriesPage() {
 
   const sortedCategories = [...categories].sort(
     (firstCategory, secondCategory) => {
-      const firstHasProducts = firstCategory._count.products > 0;
-      const secondHasProducts = secondCategory._count.products > 0;
+      const firstHasProducts =
+        firstCategory._count.products > 0;
+
+      const secondHasProducts =
+        secondCategory._count.products > 0;
 
       if (firstHasProducts !== secondHasProducts) {
         return firstHasProducts ? -1 : 1;
@@ -80,52 +83,65 @@ export default async function CategoriesPage() {
             </p>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            className={`grid gap-6 ${
+              sortedCategories.length === 1
+                ? "mx-auto max-w-xl grid-cols-1"
+                : sortedCategories.length === 2
+                  ? "mx-auto max-w-5xl grid-cols-1 sm:grid-cols-2"
+                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }`}
+          >
             {sortedCategories.map((category) => {
-              const productCount = category._count.products;
-              const hasProducts = productCount > 0;
+              const productCount =
+                category._count.products;
+
+              const hasProducts =
+                productCount > 0;
 
               const cardContent = (
                 <>
-                  <h2
-                    className={`text-2xl font-bold transition-colors ${
-                      hasProducts
-                        ? "text-stone-900 group-hover:text-[#C85A1A]"
-                        : "text-stone-500"
-                    }`}
-                  >
-                    {category.nameAr}
-                  </h2>
+                  <div>
+                    <h2
+                      className={`text-2xl font-bold transition-colors ${
+                        hasProducts
+                          ? "text-stone-900 group-hover:text-[#C85A1A]"
+                          : "text-stone-500"
+                      }`}
+                    >
+                      {category.nameAr}
+                    </h2>
 
-                  <p
-                    dir="ltr"
-                    className="mt-1.5 text-left text-sm font-medium text-stone-400"
-                  >
-                    {category.nameEn}
-                  </p>
+                    <p
+                      dir="ltr"
+                      className="mt-1.5 text-left text-sm font-medium text-stone-400"
+                    >
+                      {category.nameEn}
+                    </p>
 
-                  <p className="mt-4 text-base font-medium text-stone-500">
-                    {getProductCountText(productCount)}
-                  </p>
+                    <p className="mt-4 text-base font-medium text-stone-500">
+                      {getProductCountText(productCount)}
+                    </p>
+                  </div>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-stone-100 pt-4 text-sm font-semibold">
+                  <div className="mt-auto border-t border-stone-100 pt-5">
                     {hasProducts ? (
-                      <>
-                        <span className="text-[#C85A1A]">
+                      <div className="flex min-h-11 items-center justify-between px-1 text-sm font-bold text-[#C85A1A]">
+                        <span>
                           عرض المنتجات
                         </span>
 
                         <span
                           aria-hidden="true"
-                          className="text-[#C85A1A]"
+                          className="text-base transition-transform duration-200 group-hover:-translate-x-1"
                         >
                           ←
                         </span>
-                      </>
+                      </div>
                     ) : (
-                      <span className="text-stone-400">
+                      <div className="flex min-h-11 items-center rounded-xl bg-stone-100 px-4 text-sm font-semibold text-stone-400">
                         قريبًا
-                      </span>
+                      </div>
                     )}
                   </div>
                 </>
@@ -135,14 +151,14 @@ export default async function CategoriesPage() {
                 <Link
                   key={category.id}
                   href={`/categories/${category.slug}`}
-                  className="group rounded-3xl border border-stone-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
+                  className="group flex min-h-[250px] flex-col rounded-3xl border border-stone-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg sm:p-8"
                 >
                   {cardContent}
                 </Link>
               ) : (
                 <div
                   key={category.id}
-                  className="rounded-3xl border border-stone-200 bg-stone-50/60 p-6"
+                  className="flex min-h-[250px] flex-col rounded-3xl border border-stone-200 bg-stone-50/60 p-7 sm:p-8"
                 >
                   {cardContent}
                 </div>
