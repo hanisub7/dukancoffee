@@ -30,6 +30,15 @@ function formatPrice(
   }).format(numericValue);
 }
 
+function formatPriceLtr(
+  value: number,
+  currencyCode = "SAR",
+) {
+  return `${new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+  }).format(value)} ${currencyCode}`;
+}
+
 function getPriceMovement(
   histories: Array<{
     price: number | string | { toString(): string };
@@ -699,22 +708,24 @@ const brandDetails: Record<
       <section className="site-container py-8 sm:py-10 lg:py-12">
         <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <p className="text-sm font-semibold text-brand">الأكثر بحثًا</p>
+<p className="text-sm font-semibold text-brand">
+  أحدث الآلات
+  </p>
 
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-              ماكينات قهوة شائعة
-            </h2>
+<h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+ آلات قهوة مضافة حديثًا 
+</h2>
 
-            <p className="mt-3 max-w-2xl leading-7 text-text-secondary">
-              استعرض أحدث الماكينات المنشورة وتابع السعر الحالي لكل ماكينة.
-            </p>
+<p className="mt-3 max-w-2xl leading-7 text-text-secondary">
+  استعرض أحدث آلات القهوة المنشورة وتابع السعر الحالي لكل آلة.
+</p>
           </div>
 
           <Link
             href="/products"
             className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
           >
-            عرض جميع الماكينات ←
+           عرض جميع الآلات ←
           </Link>
         </div>
 
@@ -764,7 +775,7 @@ const brandDetails: Record<
 </h2>
 
 <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary sm:text-base">
-  تابع أحدث انخفاضات أسعار ماكينات القهوة.
+  تابع أحدث انخفاضات أسعار آلات القهوة.
 </p>
             </div>
 
@@ -803,21 +814,27 @@ const brandDetails: Record<
           السعر السابق
         </p>
 
-        <p className="mt-1 text-sm text-text-muted line-through">
-          {formatPrice(
+        <p
+          dir="ltr"
+          className="mt-1 text-left text-sm text-text-muted line-through"
+        >
+          {formatPriceLtr(
             item.previousPrice,
             item.currencyCode,
           )}
         </p>
       </div>
 
-      <div className="text-left">
+      <div>
         <p className="text-xs text-text-muted">
           السعر الحالي
         </p>
 
-        <p className="mt-1 text-xl font-semibold text-brand">
-          {formatPrice(
+        <p
+          dir="ltr"
+          className="mt-1 text-left text-xl font-semibold text-brand"
+        >
+          {formatPriceLtr(
             item.currentPrice,
             item.currencyCode,
           )}
@@ -826,19 +843,23 @@ const brandDetails: Record<
     </div>
 
     <div className="mt-6 border-t border-border pt-4">
-      <p className="price-movement">
+      <p className="flex items-center gap-2 text-sm font-semibold text-[#C85A1A]">
         <span
-          className="price-movement-arrow"
           aria-hidden="true"
+          className="text-base leading-none"
         >
           ↓
         </span>
 
-        أقل من السعر السابق بـ{" "}
-        {formatPrice(
-          item.savingAmount,
-          item.currencyCode,
-        )}
+        <span>
+          أقل من السعر السابق بـ{" "}
+          <span dir="ltr">
+            {formatPriceLtr(
+              item.savingAmount,
+              item.currencyCode,
+            )}
+          </span>
+        </span>
       </p>
 
       <p className="mt-2 text-xs text-text-muted">
