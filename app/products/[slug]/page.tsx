@@ -610,15 +610,37 @@ async function getRelatedProducts(product: {
               },
             },
 
-            images: {
-              where: {
-                imageType: "MAIN",
-              },
-              take: 1,
-              select: {
-                url: true,
-              },
-            },
+images: {
+  where: {
+    imageType: "MAIN",
+  },
+  take: 1,
+  select: {
+    url: true,
+  },
+},
+
+offers: {
+  where: {
+    inStock: true,
+    retailer: {
+      active: true,
+      deletedAt: null,
+      country: {
+        code: "SA",
+        enabled: true,
+      },
+    },
+  },
+  orderBy: {
+    currentPrice: "asc",
+  },
+  take: 1,
+  select: {
+    currentPrice: true,
+    currencyCode: true,
+  },
+},
           },
         })
       : [];
@@ -654,15 +676,37 @@ async function getRelatedProducts(product: {
         },
       },
 
-      images: {
-        where: {
-          imageType: "MAIN",
-        },
-        take: 1,
-        select: {
-          url: true,
-        },
+images: {
+  where: {
+    imageType: "MAIN",
+  },
+  take: 1,
+  select: {
+    url: true,
+  },
+},
+
+offers: {
+  where: {
+    inStock: true,
+    retailer: {
+      active: true,
+      deletedAt: null,
+      country: {
+        code: "SA",
+        enabled: true,
       },
+    },
+  },
+  orderBy: {
+    currentPrice: "asc",
+  },
+  take: 1,
+  select: {
+    currentPrice: true,
+    currencyCode: true,
+  },
+},
     },
   });
 
@@ -702,15 +746,37 @@ const categoryProducts = await prisma.product.findMany({
       },
     },
 
-    images: {
-      where: {
-        imageType: "MAIN",
-      },
-      take: 1,
-      select: {
-        url: true,
+images: {
+  where: {
+    imageType: "MAIN",
+  },
+  take: 1,
+  select: {
+    url: true,
+  },
+},
+
+offers: {
+  where: {
+    inStock: true,
+    retailer: {
+      active: true,
+      deletedAt: null,
+      country: {
+        code: "SA",
+        enabled: true,
       },
     },
+  },
+  orderBy: {
+    currentPrice: "asc",
+  },
+  take: 1,
+  select: {
+    currentPrice: true,
+    currencyCode: true,
+  },
+},
   },
 });
 
@@ -1187,7 +1253,7 @@ const relatedProducts = await getRelatedProducts({
 
           <span aria-hidden="true">/</span>
 
-          <span className="max-w-[240px] truncate text-black/70">
+          <span className="min-w-0 text-black/70">
             {product.fullName}
           </span>
         </nav>
@@ -1295,19 +1361,15 @@ decimalToNumber(bestOffer.originalPrice) >
   </div>
 ) : null}
 
-<p className="mt-5 text-sm font-semibold text-stone-900">
-  {lowestPublicPriceRetailerCount > 1
-    ? `متوفر بهذا السعر لدى ${lowestPublicPriceRetailerCount} متاجر`
-    : bestOffer.retailer.name}
-</p>
+<div className="mt-5 border-t border-stone-100 pt-4">
+  <p className="text-sm font-semibold text-stone-900">
+    {lowestPublicPriceRetailerCount > 1
+      ? `متوفر بهذا السعر لدى ${lowestPublicPriceRetailerCount} متاجر`
+      : bestOffer.retailer.name}
+  </p>
 
-      <p className="mt-1 text-xs text-stone-400">
-        آخر تحديث: {formatDate(bestOffer.checkedAt)}
-      </p>
 
-      <p className="mt-1 text-xs text-stone-400">
-  تم التحقق
-</p>
+</div>
 {bestPromotion &&
 bestConditionalPrice !== null ? (
   <a
@@ -1317,7 +1379,7 @@ bestConditionalPrice !== null ? (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4">
         <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-[#C85A1A]">
-          يوجد عرض خاص
+           عرض خاص
         </span>
 
         {bestPromotion.discountPercent !== null ? (
@@ -1787,49 +1849,75 @@ return (
                 : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
         }`}
       >
-        {relatedProducts.map((item) => (
-          <Link
-            key={item.id}
-            href={`/products/${item.slug}`}
-            className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
-          >
-            <div className="flex h-60 items-center justify-center overflow-hidden border-b border-stone-100 bg-[#FAFAF9] p-8">
-              {item.images[0]?.url ? (
-                <img
-                  src={item.images[0].url}
-                  alt={item.fullName}
-                  className="h-full w-full scale-[0.92] object-contain object-center transition-transform duration-500 group-hover:scale-[0.96]"
-                />
-              ) : (
-                <div className="text-sm text-stone-400">
-                  لا توجد صورة
-                </div>
+{relatedProducts.map((item) => {
+  const offer = item.offers[0] ?? null;
+
+  return (
+    <Link
+      key={item.id}
+      href={`/products/${item.slug}`}
+      className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
+    >
+      <div className="flex h-60 items-center justify-center overflow-hidden border-b border-stone-100 bg-[#FAFAF9] p-8">
+        {item.images[0]?.url ? (
+          <img
+            src={item.images[0].url}
+            alt={item.fullName}
+            className="h-full w-full scale-[0.92] object-contain object-center transition-transform duration-500 group-hover:scale-[0.96]"
+          />
+        ) : (
+          <div className="text-sm text-stone-400">
+            لا توجد صورة
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col p-5">
+        <p
+          dir="ltr"
+          className="text-left text-xs font-semibold uppercase tracking-wide text-[#C85A1A]"
+        >
+          {item.brand.name}
+        </p>
+
+        <h3
+          dir="ltr"
+          className="mt-2 line-clamp-2 min-h-14 text-left text-lg font-bold leading-7 text-stone-900"
+        >
+          {item.fullName}
+        </h3>
+
+        <div className="mt-4 border-t border-stone-100 pt-4">
+          <p className="text-xs font-medium text-stone-500">
+            السعر الحالي
+          </p>
+
+          {offer ? (
+            <p
+              dir="ltr"
+              className="mt-1 text-left text-xl font-bold text-[#C85A1A]"
+            >
+              {formatPrice(
+                offer.currentPrice,
+                offer.currencyCode,
               )}
-            </div>
+            </p>
+          ) : (
+            <p className="mt-1 text-sm font-medium text-stone-500">
+              السعر غير متوفر حاليًا
+            </p>
+          )}
+        </div>
 
-            <div className="flex flex-1 flex-col p-5">
-              <p
-                dir="ltr"
-                className="text-left text-xs font-semibold uppercase tracking-wide text-[#C85A1A]"
-              >
-                {item.brand.name}
-              </p>
-
-              <h3
-                dir="ltr"
-                className="mt-2 line-clamp-2 min-h-14 text-left text-lg font-bold leading-7 text-stone-900"
-              >
-                {item.fullName}
-              </h3>
-
-              <div className="mt-auto pt-5">
-                <span className="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-stone-900 transition-all duration-200 group-hover:border-orange-200 group-hover:bg-orange-50 group-hover:text-[#C85A1A]">
-                  عرض المنتج
-                </span>
-              </div>
-            </div>
-          </Link>
-        ))}
+        <div className="mt-auto pt-5">
+          <span className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold !text-white shadow-sm transition-all duration-200 group-hover:-translate-y-0.5 group-hover:bg-brand-hover group-hover:shadow-md">
+            عرض المنتج
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+})}
       </div>
     </div>
   ) : null}
