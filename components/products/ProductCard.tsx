@@ -239,50 +239,54 @@ export default function ProductCard({
   </div>
 ) : null}
         </div>
+<div className="mt-5 border-t border-stone-100 pt-5">
+  <div className="flex items-end justify-between gap-4">
+    <div>
+      <p className="text-xs font-medium text-stone-500">
+        السعر الحالي
+      </p>
 
-        <div className="mt-5 border-t border-stone-100 pt-5">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium text-stone-500">
-                السعر الحالي
-              </p>
+      {hasPrice ? (
+        <p
+          dir="ltr"
+          className="mt-2 text-left text-3xl font-extrabold tracking-tight text-[#C85A1A]"
+        >
+          {formatPrice(price, currencyCode)}
+        </p>
+      ) : (
+        <div className="mt-2">
+          <p className="text-sm font-semibold text-stone-700">
+            السعر غير متوفر حاليًا
+          </p>
 
-              {hasPrice ? (
-                <p
-                  dir="ltr"
-                  className="mt-2 text-left text-3xl font-extrabold tracking-tight text-[#C85A1A]"
-                >
-                  {formatPrice(price, currencyCode)}
-                </p>
-              ) : (
-                <p className="mt-2 text-sm font-medium text-stone-500">
-                  السعر غير متوفر حاليًا
-                </p>
-              )}
-            </div>
-          </div>
-
-          {movementText ? (
-            <div className="mt-3 flex min-h-8 items-center gap-2 rounded-lg bg-stone-50 px-3 py-1.5 text-xs text-stone-600">
-              {movementSymbol ? (
-                <span
-                  aria-hidden="true"
-                  className="text-base font-semibold leading-none text-stone-700"
-                >
-                  {movementSymbol}
-                </span>
-              ) : null}
-
-              <span>{movementText}</span>
-            </div>
-          ) : (
-            <div
-              className="mt-3 min-h-11"
-              aria-hidden="true"
-            />
-          )}
+          <p className="mt-1 text-xs leading-5 text-stone-500">
+            تحقق من تفاصيل المنتج لمعرفة أحدث الأسعار.
+          </p>
         </div>
+      )}
+    </div>
+  </div>
 
+  {movementText ? (
+    <div className="mt-3 flex min-h-8 items-center gap-2 rounded-lg bg-stone-50 px-3 py-1.5 text-xs text-stone-600">
+      {movementSymbol ? (
+        <span
+          aria-hidden="true"
+          className="text-base font-semibold leading-none text-stone-700"
+        >
+          {movementSymbol}
+        </span>
+      ) : null}
+
+      <span>{movementText}</span>
+    </div>
+  ) : (
+    <div
+      className="mt-3 min-h-11"
+      aria-hidden="true"
+    />
+  )}
+</div>
         <div className="mt-auto pt-4">
           <Link
             href={productUrl}
