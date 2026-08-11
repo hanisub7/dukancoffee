@@ -9,6 +9,26 @@ export const metadata: Metadata = {
     "تصفح العلامات التجارية لآلات القهوة واكتشف المنتجات المتوفرة لكل علامة.",
 };
 
+function getProductCountText(count: number) {
+  if (count === 0) {
+    return "لا توجد منتجات";
+  }
+
+  if (count === 1) {
+    return "منتج واحد";
+  }
+
+  if (count === 2) {
+    return "منتجان";
+  }
+
+  if (count >= 3 && count <= 10) {
+    return `${count} منتجات`;
+  }
+
+  return `${count} منتجًا`;
+}
+
 export default async function BrandsPage() {
   const brands = await prisma.brand.findMany({
     where: {
@@ -35,8 +55,22 @@ export default async function BrandsPage() {
     },
   });
 
+  const sortedBrands = [...brands].sort((firstBrand, secondBrand) => {
+    const firstHasProducts = firstBrand._count.products > 0;
+    const secondHasProducts = secondBrand._count.products > 0;
+
+    if (firstHasProducts !== secondHasProducts) {
+      return firstHasProducts ? -1 : 1;
+    }
+
+    return firstBrand.name.localeCompare(secondBrand.name, "en");
+  });
+
   return (
-    <main dir="rtl" className="min-h-screen bg-white text-stone-900">
+    <main
+      dir="rtl"
+      className="min-h-screen bg-white text-stone-900"
+    >
       <section className="border-b border-stone-200 bg-[#FFF9F4]">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
           <div className="max-w-3xl">
@@ -49,18 +83,19 @@ export default async function BrandsPage() {
             </h1>
 
             <p className="mt-4 max-w-2xl text-base leading-8 text-stone-700 sm:text-lg">
-              تصفح أشهر العلامات التجارية لآلات القهوة، اكتشف منتجات كل علامة
-              وقارن الأسعار المتاحة.
+              تصفح أشهر العلامات التجارية لآلات القهوة،
+              اكتشف منتجات كل علامة وقارن الأسعار المتاحة.
             </p>
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        {brands.length > 0 ? (
+        {sortedBrands.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {brands.map((brand) => {
-              const hasProducts = brand._count.products > 0;
+            {sortedBrands.map((brand) => {
+              const productCount = brand._count.products;
+              const hasProducts = productCount > 0;
 
               const cardContent = (
                 <>
@@ -76,7 +111,7 @@ export default async function BrandsPage() {
                   </p>
 
                   <p className="mt-3 text-base font-medium text-stone-500">
-                    {brand._count.products} منتج
+                    {getProductCountText(productCount)}
                   </p>
 
                   <div className="mt-6 flex items-center justify-between border-t border-stone-100 pt-4 text-sm font-semibold">
@@ -95,7 +130,7 @@ export default async function BrandsPage() {
                       </>
                     ) : (
                       <span className="text-stone-400">
-                        لا توجد منتجات متاحة حالياً
+                        قريبًا
                       </span>
                     )}
                   </div>
@@ -123,7 +158,7 @@ export default async function BrandsPage() {
         ) : (
           <div className="rounded-3xl border border-dashed border-stone-300 bg-stone-50 px-6 py-16 text-center">
             <p className="font-semibold text-stone-900">
-              لا توجد علامات تجارية متاحة حالياً.
+              لا توجد علامات تجارية متاحة حاليًا.
             </p>
           </div>
         )}
