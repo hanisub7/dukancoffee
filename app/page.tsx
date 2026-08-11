@@ -39,6 +39,7 @@ function formatPriceLtr(
   }).format(value)} ${currencyCode}`;
 }
 
+
 function getPriceMovement(
   histories: Array<{
     price: number | string | { toString(): string };
@@ -721,12 +722,13 @@ const brandDetails: Record<
 </p>
           </div>
 
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
-          >
-           عرض جميع الآلات ←
-          </Link>
+<Link
+  href="/products"
+  style={{ color: "#C85A1A" }}
+  className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-3"
+>
+  عرض جميع الآلات ←
+</Link>
         </div>
 
         {popularProducts.length > 0 ? (
@@ -779,12 +781,13 @@ const brandDetails: Record<
 </p>
             </div>
 
-            <Link
-              href="/price-drops"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all duration-200 hover:gap-3 hover:text-brand-hover"
-            >
-              عرض جميع التغيرات ←
-            </Link>
+<Link
+  href="/price-drops"
+  style={{ color: "#C85A1A" }}
+  className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-200 hover:gap-3"
+>
+  عرض جميع التغيرات ←
+</Link>
           </div>
 
           {latestPriceDrops.length > 0 ? (
@@ -943,18 +946,18 @@ const brandDetails: Record<
             )}
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-4">
-            <span
-              aria-hidden="true"
-              className="text-lg text-brand transition-transform duration-200 group-hover:-translate-x-1"
-            >
-              ←
-            </span>
+<div className="mt-4 flex items-center justify-between border-t border-stone-100 pt-4">
+  <span className="text-sm font-semibold text-brand">
+    عرض المنتجات
+  </span>
 
-            <span className="text-sm font-semibold text-brand">
-              عرض المنتجات
-            </span>
-          </div>
+  <span
+    aria-hidden="true"
+    className="text-lg text-brand transition-transform duration-200 group-hover:-translate-x-1"
+  >
+    ←
+  </span>
+</div>
         </Link>
       );
     })}
