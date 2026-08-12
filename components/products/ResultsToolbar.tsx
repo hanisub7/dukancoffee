@@ -70,13 +70,13 @@ export default function ResultsToolbar({
           النتائج
         </p>
 
-        <p className="mt-1 text-lg font-bold text-stone-900">
-          {totalProducts === 0
-            ? "لم يتم العثور على ماكينات قهوة"
-            : totalProducts === 1
-              ? "تم العثور على ماكينة قهوة واحدة"
-              : `تم العثور على ${totalProducts} ماكينات قهوة`}
-        </p>
+<p className="mt-1 text-lg font-bold text-stone-900">
+  {totalProducts === 0
+    ? "لم يتم العثور على آلات قهوة"
+    : totalProducts === 1
+      ? "تم العثور على آلة قهوة واحدة"
+      : `تم العثور على ${totalProducts} آلات قهوة`}
+</p>
       </div>
 
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center">

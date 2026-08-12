@@ -123,11 +123,11 @@ const selectedCategoryLabel =
 </p>
 
 <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-  اعثر على ماكينة القهوة المناسبة
+  اعثر على آلة القهوة المناسبة
 </h1>
 
 <p className="mt-4 max-w-2xl text-base leading-8 text-text-secondary sm:text-lg">
-  تصفح الماكينات المنشورة، قارن الأسعار الحالية،
+  تصفح الآلات المنشورة، قارن الأسعار الحالية،
   تابع تغير السعر قبل اتخاذ قرار الشراء.
 </p>
           </div>
