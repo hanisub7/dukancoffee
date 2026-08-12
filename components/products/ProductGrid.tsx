@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import ProductCard, {
   type ProductPriceMovement,
 } from "./ProductCard";
@@ -14,7 +16,7 @@ export type ProductGridItem = {
   priceMovement?: ProductPriceMovement;
   priceMovementText?: string | null;
   isLowestPrice?: boolean;
-    quickSpecs: Array<{
+  quickSpecs: Array<{
     label: string;
     value: string;
   }>;
@@ -41,43 +43,43 @@ export default function ProductGrid({
           جرّب تغيير كلمات البحث أو خيارات التصفية.
         </p>
 
-        <a
+        <Link
           href="/products"
           className="mt-5 inline-flex h-10 items-center justify-center rounded-xl bg-[#F2A064] px-5 text-sm font-semibold text-neutral-950 transition-colors hover:bg-[#E98B48] focus:outline-none focus:ring-2 focus:ring-[#C85A1A] focus:ring-offset-2"
         >
           عرض جميع المنتجات
-        </a>
+        </Link>
       </div>
     );
   }
 
-return (
-  <div
-    dir="rtl"
-    className={
-      products.length === 1
-        ? "mx-auto grid w-full max-w-[620px] grid-cols-1 gap-6"
-        : products.length === 2
-          ? "grid w-full grid-cols-1 gap-6 sm:grid-cols-2"
-          : "grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-    }
-  >
-    {products.map((product) => (
-      <ProductCard
-        key={product.id}
-        slug={product.slug}
-        name={product.name}
-        brandName={product.brandName}
-        imageUrl={product.imageUrl}
-        subtitle={product.subtitle}
-        price={product.price}
-        currencyCode={product.currencyCode}
-        priceMovement={product.priceMovement}
-        priceMovementText={product.priceMovementText}
-        isLowestPrice={product.isLowestPrice}
-        quickSpecs={product.quickSpecs}
-      />
-    ))}
-  </div>
-);
+  return (
+    <div
+      dir="rtl"
+      className={
+        products.length === 1
+          ? "mx-auto grid w-full max-w-[620px] grid-cols-1 gap-6"
+          : products.length === 2
+            ? "grid w-full grid-cols-1 gap-6 sm:grid-cols-2"
+            : "grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      }
+    >
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          slug={product.slug}
+          name={product.name}
+          brandName={product.brandName}
+          imageUrl={product.imageUrl}
+          subtitle={product.subtitle}
+          price={product.price}
+          currencyCode={product.currencyCode}
+          priceMovement={product.priceMovement}
+          priceMovementText={product.priceMovementText}
+          isLowestPrice={product.isLowestPrice}
+          quickSpecs={product.quickSpecs}
+        />
+      ))}
+    </div>
+  );
 }

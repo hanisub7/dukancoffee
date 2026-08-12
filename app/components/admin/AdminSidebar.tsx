@@ -1,28 +1,47 @@
+import Link from "next/link";
+
 export default function AdminSidebar() {
   return (
-    <aside className="w-64 min-h-screen border-r bg-white p-6">
-      <h2 className="text-xl font-bold">DukanCoffee</h2>
+    <aside className="min-h-screen w-64 border-r bg-white p-6">
+      <h2 className="text-xl font-bold">
+        DukanCoffee
+      </h2>
 
       <nav className="mt-8 space-y-3">
-        <a href="/admin" className="block hover:text-blue-600">
+        <Link
+          href="/admin"
+          className="block hover:text-blue-600"
+        >
           Dashboard
-        </a>
+        </Link>
 
-        <a href="/admin/products" className="block hover:text-blue-600">
+        <Link
+          href="/admin/products"
+          className="block hover:text-blue-600"
+        >
           Products
-        </a>
+        </Link>
 
-        <a href="/admin/brands" className="block hover:text-blue-600">
+        <Link
+          href="/admin/brands"
+          className="block hover:text-blue-600"
+        >
           Brands
-        </a>
+        </Link>
 
-        <a href="/admin/categories" className="block hover:text-blue-600">
+        <Link
+          href="/admin/categories"
+          className="block hover:text-blue-600"
+        >
           Categories
-        </a>
+        </Link>
 
-        <a href="/admin/retailers" className="block hover:text-blue-600">
+        <Link
+          href="/admin/retailers"
+          className="block hover:text-blue-600"
+        >
           Retailers
-        </a>
+        </Link>
       </nav>
     </aside>
   );

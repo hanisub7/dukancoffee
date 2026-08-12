@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 
 type FilterOption = {
   value: string;
@@ -20,9 +20,6 @@ export default function Filters({
   selectedBrand = "",
   selectedCategory = "",
 }: FiltersProps) {
-  const [showAdditionalOptions, setShowAdditionalOptions] =
-    useState(false);
-
   const hasSelectedFilters = Boolean(
     selectedBrand || selectedCategory,
   );
@@ -123,28 +120,25 @@ export default function Filters({
             </div>
           </div>
 
-<button
-  type="submit"
-  style={{ color: "#FFFFFF" }}
-  className="inline-flex h-11 items-center justify-center rounded-xl bg-[#F2A064] px-5 text-sm font-bold transition-colors hover:bg-[#E98B48] focus:outline-none focus:ring-2 focus:ring-[#C85A1A] focus:ring-offset-2"
->
-  تطبيق
-</button>
+          <button
+            type="submit"
+            style={{ color: "#FFFFFF" }}
+            className="inline-flex h-11 items-center justify-center rounded-xl bg-[#F2A064] px-5 text-sm font-bold transition-colors hover:bg-[#E98B48] focus:outline-none focus:ring-2 focus:ring-[#C85A1A] focus:ring-offset-2"
+          >
+            تطبيق
+          </button>
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3">
-
-          {hasSelectedFilters ? (
-            <a
+        {hasSelectedFilters ? (
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3">
+            <Link
               href="/products"
               className="text-xs font-medium text-black/55 transition-colors hover:text-black"
             >
               مسح الاختيارات
-            </a>
-          ) : null}
-        </div>
-
-
+            </Link>
+          </div>
+        ) : null}
       </form>
     </div>
   );

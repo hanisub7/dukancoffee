@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
 import EmptyState from "@/components/products/EmptyState";
@@ -196,47 +197,47 @@ const selectedCategoryLabel =
       </a>
     ) : null}
 
-    {selectedCategory ? (
-      <a
-        href={`/products?${new URLSearchParams({
-          ...(search ? { search } : {}),
-          ...(selectedBrand
-            ? { brand: selectedBrand }
-            : {}),
-          ...(selectedSort !== "updated"
-            ? { sort: selectedSort }
-            : {}),
-        }).toString()}`}
-        className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 transition-colors hover:border-orange-200 hover:text-[#C85A1A]"
-      >
-        <span>{selectedCategoryLabel}</span>
-        <span aria-hidden="true">×</span>
-      </a>
-    ) : null}
-
-    <a
-      href="/products"
-      className="px-2 py-1.5 text-sm font-semibold text-[#C85A1A] transition-colors hover:text-orange-700"
-    >
-      مسح الكل
-    </a>
-  </div>
+{selectedCategory ? (
+  <Link
+    href={`/products?${new URLSearchParams({
+      ...(search ? { search } : {}),
+      ...(selectedBrand
+        ? { brand: selectedBrand }
+        : {}),
+      ...(selectedSort !== "updated"
+        ? { sort: selectedSort }
+        : {}),
+    }).toString()}`}
+    className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 transition-colors hover:border-orange-200 hover:text-[#C85A1A]"
+  >
+    <span>{selectedCategoryLabel}</span>
+    <span aria-hidden="true">×</span>
+  </Link>
 ) : null}
 
-        {totalPages > 1 ? (
-          <div className="mt-4 flex justify-end">
-            <div className="inline-flex w-fit items-center rounded-full border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600">
-              الصفحة
-              <span className="mx-1 font-bold text-stone-900">
-                {currentPage}
-              </span>
-              من
-              <span className="mr-1 font-bold text-stone-900">
-                {totalPages}
-              </span>
-            </div>
-          </div>
-        ) : null}
+<Link
+  href="/products"
+  className="px-2 py-1.5 text-sm font-semibold text-[#C85A1A] transition-colors hover:text-orange-700"
+>
+  مسح الكل
+</Link>
+</div>
+) : null}
+
+{totalPages > 1 ? (
+  <div className="mt-4 flex justify-end">
+    <div className="inline-flex w-fit items-center rounded-full border border-stone-200 bg-stone-50 px-4 py-2 text-sm text-stone-600">
+      الصفحة
+      <span className="mx-1 font-bold text-stone-900">
+        {currentPage}
+      </span>
+      من
+      <span className="mr-1 font-bold text-stone-900">
+        {totalPages}
+      </span>
+    </div>
+  </div>
+) : null}
 
 <div className="mt-8 w-full">
   {products.length > 0 ? (
