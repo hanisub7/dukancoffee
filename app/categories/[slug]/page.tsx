@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import ProductGrid from "@/components/products/ProductGrid";
 import { prisma } from "@/app/lib/prisma";
+import { buildQuickSpecs } from "@/app/lib/products/queries";
 
 type CategoryPageProps = {
   params: Promise<{
@@ -53,60 +54,88 @@ export default async function CategoryPage({
       id: true,
       nameAr: true,
       nameEn: true,
+
       products: {
         where: {
           status: "PUBLISHED",
           deletedAt: null,
         },
+
         orderBy: {
           updatedAt: "desc",
         },
+
         select: {
           id: true,
           slug: true,
           fullName: true,
           model: true,
+
           brand: {
             select: {
               name: true,
             },
           },
+
+          specification: {
+            select: {
+              machineType: true,
+              grinderType: true,
+              displayType: true,
+              milkSystem: true,
+              waterTankL: true,
+              pumpPressureBar: true,
+            },
+          },
+
           images: {
             where: {
               imageType: "MAIN",
             },
+
             orderBy: {
               sortOrder: "asc",
             },
+
             take: 1,
+
             select: {
               url: true,
             },
           },
+
           offers: {
             where: {
               inStock: true,
+
               retailer: {
                 active: true,
                 deletedAt: null,
+
                 country: {
                   code: "SA",
                   enabled: true,
                 },
               },
             },
+
             orderBy: {
               currentPrice: "asc",
             },
+
             take: 1,
+
             select: {
               currentPrice: true,
               currencyCode: true,
+
               priceHistory: {
                 orderBy: {
                   checkedAt: "desc",
                 },
+
                 take: 2,
+
                 select: {
                   price: true,
                 },
@@ -124,25 +153,42 @@ export default async function CategoryPage({
 
   const products = category.products.map((product) => {
     const offer = product.offers[0] ?? null;
-    const latestHistory = offer?.priceHistory[0] ?? null;
-    const previousHistory = offer?.priceHistory[1] ?? null;
 
-    let priceMovement: "down" | "up" | "same" | "none" = "none";
+    const latestHistory =
+      offer?.priceHistory[0] ?? null;
+
+    const previousHistory =
+      offer?.priceHistory[1] ?? null;
+
+    let priceMovement:
+      | "down"
+      | "up"
+      | "same"
+      | "none" = "none";
+
     let priceMovementText: string | null = null;
 
     if (latestHistory && previousHistory) {
-      const latestPrice = Number(latestHistory.price.toString());
-      const previousPrice = Number(previousHistory.price.toString());
+      const latestPrice = Number(
+        latestHistory.price.toString(),
+      );
+
+      const previousPrice = Number(
+        previousHistory.price.toString(),
+      );
 
       if (latestPrice < previousPrice) {
         priceMovement = "down";
-        priceMovementText = "أقل من السعر السابق";
+        priceMovementText =
+          "أقل من السعر السابق";
       } else if (latestPrice > previousPrice) {
         priceMovement = "up";
-        priceMovementText = "أعلى من السعر السابق";
+        priceMovementText =
+          "أعلى من السعر السابق";
       } else {
         priceMovement = "same";
-        priceMovementText = "لا يوجد تغير في السعر";
+        priceMovementText =
+          "لا يوجد تغير في السعر";
       }
     }
 
@@ -153,40 +199,52 @@ export default async function CategoryPage({
       brandName: product.brand.name,
       imageUrl: product.images[0]?.url ?? null,
       subtitle: product.model,
-      price: offer?.currentPrice
-        ? offer.currentPrice.toString()
-        : null,
-      currencyCode: offer?.currencyCode ?? "SAR",
+
+      price: offer
+        ? Number(offer.currentPrice.toString())
+        : undefined,
+
+      currencyCode:
+        offer?.currencyCode ?? "SAR",
+
       priceMovement,
       priceMovementText,
       isLowestPrice: false,
+
+      quickSpecs: buildQuickSpecs(
+        product.specification,
+      ),
     };
   });
 
   return (
-    <main dir="rtl" className="min-h-screen bg-white text-stone-900">
+    <main
+      dir="rtl"
+      className="min-h-screen bg-white text-stone-900"
+    >
       <section className="border-b border-stone-200 bg-[#FFF9F4]">
-        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-6 lg:px-8">
-<div className="max-w-3xl text-right">
-  <p className="text-lg font-semibold text-[#C85A1A]">
-    التصنيف
-  </p>
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+          <div className="max-w-3xl text-right">
+            <p className="text-lg font-semibold text-[#C85A1A]">
+              التصنيف
+            </p>
 
-  <h1 className="mt-3 text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl">
-    {category.nameAr}
-  </h1>
+            <h1 className="mt-3 text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl">
+              {category.nameAr}
+            </h1>
 
-  <p
-    dir="ltr"
-    className="mt-2 text-right text-base font-medium text-stone-500"
-  >
-    {category.nameEn}
-  </p>
+            <p
+              dir="ltr"
+              className="mt-2 text-right text-base font-medium text-stone-500"
+            >
+              {category.nameEn}
+            </p>
 
-  <p className="mt-4 text-base font-medium text-stone-600">
-    {products.length} منتج
-  </p>
-</div>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-stone-600 sm:text-lg">
+              استعرض {category.nameAr} وقارن الأسعار
+              والمواصفات للعثور على الخيار الأنسب لك.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -196,7 +254,7 @@ export default async function CategoryPage({
         ) : (
           <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 py-14 text-center">
             <p className="font-semibold text-stone-900">
-              لا توجد منتجات متاحة في هذا التصنيف حالياً.
+              لا توجد منتجات متاحة في هذا التصنيف حاليًا.
             </p>
           </div>
         )}
