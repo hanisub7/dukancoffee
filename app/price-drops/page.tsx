@@ -37,6 +37,7 @@ export default async function PriceDropsPage({
       dir="rtl"
       className="min-h-screen bg-white text-stone-900"
     >
+      {/* Hero */}
       <section className="border-b border-stone-200 bg-[#FFF9F4]">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
           <div className="max-w-3xl">
@@ -49,7 +50,7 @@ export default async function PriceDropsPage({
             </h1>
 
             <p className="mt-3 max-w-2xl text-base leading-8 text-stone-700 sm:text-lg">
-              تابع أحدث انخفاضات أسعار ماكينات القهوة
+              تابع أحدث انخفاضات أسعار آلات القهوة
               واكتشف فرص الشراء الأفضل.
             </p>
           </div>
@@ -57,38 +58,46 @@ export default async function PriceDropsPage({
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Sort */}
         <form
           method="get"
-          className="mx-auto mb-6 flex max-w-2xl flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center"
+          className="mx-auto mb-7 flex max-w-3xl flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end"
         >
-          <label
-            htmlFor="sort"
-            className="shrink-0 text-sm font-medium text-stone-600"
-          >
-            ترتيب النتائج
-          </label>
+          <div className="min-w-0 flex-1">
+            <label
+              htmlFor="sort"
+              className="mb-2 block text-sm font-semibold text-stone-700"
+            >
+              ترتيب النتائج
+            </label>
 
-          <select
-            id="sort"
-            name="sort"
-            defaultValue={params.sort ?? "latest"}
-            className="h-11 min-w-0 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm font-medium text-stone-900 outline-none transition-colors hover:border-stone-300 focus:border-brand focus:ring-2 focus:ring-brand/10"
-          >
-            <option value="latest">الأحدث</option>
-            <option value="saving-desc">
-              أكبر توفير
-            </option>
-            <option value="price-asc">
-              السعر: من الأقل إلى الأعلى
-            </option>
-            <option value="price-desc">
-              السعر: من الأعلى إلى الأقل
-            </option>
-          </select>
+            <select
+              id="sort"
+              name="sort"
+              defaultValue={params.sort ?? "latest"}
+              className="h-11 w-full rounded-xl border border-stone-200 bg-white px-4 text-sm font-medium text-stone-900 outline-none transition-colors hover:border-stone-300 focus:border-brand focus:ring-2 focus:ring-brand/10"
+            >
+              <option value="latest">
+                الأحدث
+              </option>
+
+              <option value="saving-desc">
+                أكبر توفير
+              </option>
+
+              <option value="price-asc">
+                السعر: من الأقل إلى الأعلى
+              </option>
+
+              <option value="price-desc">
+                السعر: من الأعلى إلى الأقل
+              </option>
+            </select>
+          </div>
 
           <button
             type="submit"
-            className="h-11 shrink-0 rounded-xl bg-brand px-6 text-sm font-semibold !text-white transition-colors hover:bg-brand-hover"
+            className="h-11 shrink-0 rounded-xl bg-brand px-7 text-sm font-semibold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-md"
           >
             تطبيق
           </button>
@@ -113,12 +122,12 @@ export default async function PriceDropsPage({
               href="/products"
               className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-brand px-6 text-sm font-semibold !text-white shadow-sm transition-colors hover:bg-brand-hover"
             >
-              تصفح جميع الماكينات
+             تصفح جميع الآلات
             </Link>
           </div>
         ) : (
           <div
-            className={`grid gap-5 ${
+            className={`grid gap-6 ${
               result.items.length === 1
                 ? "mx-auto max-w-md grid-cols-1"
                 : result.items.length === 2
@@ -129,23 +138,26 @@ export default async function PriceDropsPage({
             {result.items.map((item) => (
               <article
                 key={item.offerId}
-                className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
+                className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl"
               >
-<div className="flex h-72 items-center justify-center overflow-hidden border-b border-stone-100 bg-[#F8F8F8] p-4">
-  {item.imageUrl ? (
-    <img
-      src={item.imageUrl}
-      alt={item.productName}
-      className="max-h-full max-w-full object-contain object-center transition-transform duration-300 group-hover:scale-[1.03]"
-    />
-  ) : (
-    <div className="flex h-full w-full items-center justify-center text-sm text-stone-400">
-      لا توجد صورة للمنتج
-    </div>
-  )}
-</div>
+                {/* Product image */}
+                <div className="flex h-72 items-center justify-center overflow-hidden border-b border-stone-100 bg-[#F8F8F8] p-4">
+                  {item.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.imageUrl}
+                      alt={item.productName}
+                      className="max-h-full max-w-full object-contain object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-stone-400">
+                      لا توجد صورة للمنتج
+                    </div>
+                  )}
+                </div>
 
-                <div className="flex flex-1 flex-col p-5">
+                <div className="flex flex-1 flex-col p-5 sm:p-6">
+                  {/* Product */}
                   <div>
                     <p
                       dir="ltr"
@@ -156,24 +168,29 @@ export default async function PriceDropsPage({
 
                     <h2
                       dir="ltr"
-                      className="mt-1.5 line-clamp-2 min-h-14 text-left text-lg font-bold leading-7 text-stone-900"
+                      className="mt-2 line-clamp-2 min-h-14 text-left text-xl font-bold leading-7 text-stone-900"
                     >
                       {item.productName}
                     </h2>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between gap-4 border-t border-stone-100 pt-4 text-sm">
+                  {/* Retailer */}
+                  <div className="mt-5 flex items-center justify-between gap-4 border-t border-stone-100 pt-4 text-sm">
                     <span className="text-stone-500">
                       المتجر
                     </span>
 
-                    <span className="font-semibold text-stone-900">
+                    <span
+                      dir="ltr"
+                      className="font-semibold text-stone-900"
+                    >
                       {item.retailerName}
                     </span>
                   </div>
 
-                  <div className="mt-4 rounded-2xl bg-stone-50 p-4">
-                    <div className="flex items-end justify-between gap-4">
+                  {/* Price comparison */}
+                  <div className="mt-4 rounded-2xl border border-stone-100 bg-stone-50 p-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-xs font-medium text-stone-500">
                           السعر السابق
@@ -181,7 +198,7 @@ export default async function PriceDropsPage({
 
                         <p
                           dir="ltr"
-                          className="mt-1 text-left text-sm font-medium text-stone-400 line-through"
+                          className="mt-2 text-left text-base font-medium text-stone-400 line-through"
                         >
                           {formatPrice(
                             item.previousPrice,
@@ -197,7 +214,7 @@ export default async function PriceDropsPage({
 
                         <p
                           dir="ltr"
-                          className="mt-1 text-left text-2xl font-bold tracking-tight text-[#C85A1A]"
+                          className="mt-2 text-left text-2xl font-extrabold tracking-tight text-[#C85A1A]"
                         >
                           {formatPrice(
                             item.currentPrice,
@@ -208,28 +225,51 @@ export default async function PriceDropsPage({
                     </div>
                   </div>
 
-                  <div className="mt-4">
-                    <span className="inline-flex rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-sm font-semibold text-[#C85A1A]">
-                      وفّر{" "}
-                      {formatPrice(
-                        item.savingAmount,
-                        item.currencyCode,
-                      )}
-                    </span>
+                  {/* Saving */}
+                  <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-sm font-medium text-stone-600">
+                        مقدار التوفير
+                      </span>
+
+                      <span
+                        dir="ltr"
+                        className="text-lg font-bold text-[#C85A1A]"
+                      >
+                        {formatPrice(
+                          item.savingAmount,
+                          item.currencyCode,
+                        )}
+                      </span>
+                    </div>
+
                   </div>
 
-                  <Link
-                    href={`/products/${item.productSlug}`}
-                    className="mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-brand px-5 text-sm font-bold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-md"
-                  >
-                    عرض المنتج
-                  </Link>
+                  {/* CTA */}
+                  <div className="mt-auto pt-5">
+                    <Link
+                      href={`/products/${item.productSlug}`}
+                      className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-bold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-md"
+                    >
+                      <span>
+                        عرض المنتج
+                      </span>
+
+                      <span
+                        aria-hidden="true"
+                        className="text-base"
+                      >
+                        ←
+                      </span>
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}
           </div>
         )}
 
+        {/* Pagination */}
         {result.totalPages > 1 ? (
           <nav
             aria-label="التنقل بين صفحات انخفاضات الأسعار"
@@ -240,8 +280,10 @@ export default async function PriceDropsPage({
                 href={{
                   pathname: "/price-drops",
                   query: {
-                    sort: params.sort ?? "latest",
-                    page: result.currentPage - 1,
+                    sort:
+                      params.sort ?? "latest",
+                    page:
+                      result.currentPage - 1,
                   },
                 }}
                 className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-medium transition-colors hover:border-stone-300"
@@ -255,13 +297,16 @@ export default async function PriceDropsPage({
               {result.totalPages}
             </span>
 
-            {result.currentPage < result.totalPages ? (
+            {result.currentPage <
+            result.totalPages ? (
               <Link
                 href={{
                   pathname: "/price-drops",
                   query: {
-                    sort: params.sort ?? "latest",
-                    page: result.currentPage + 1,
+                    sort:
+                      params.sort ?? "latest",
+                    page:
+                      result.currentPage + 1,
                   },
                 }}
                 className="rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-medium transition-colors hover:border-stone-300"
