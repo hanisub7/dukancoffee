@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getCategoryCatalog } from "@/app/lib/categories/queries";
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "التصنيفات | DukanCoffee",
