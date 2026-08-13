@@ -1838,17 +1838,17 @@ return (
         </p>
       </div>
 
-      <div
-        className={`grid gap-5 ${
-          relatedProducts.length === 1
-            ? "mx-auto max-w-sm grid-cols-1"
-            : relatedProducts.length === 2
-              ? "mx-auto max-w-2xl grid-cols-1 sm:grid-cols-2"
-              : relatedProducts.length === 3
-                ? "mx-auto max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
-        }`}
-      >
+<div
+  className={`grid gap-5 ${
+    relatedProducts.length === 1
+      ? "mx-auto max-w-sm grid-cols-1"
+      : relatedProducts.length === 2
+        ? "mx-auto w-full max-w-2xl grid-cols-1 md:grid-cols-2"
+        : relatedProducts.length === 3
+          ? "mx-auto max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+  }`}
+>
 {relatedProducts.map((item) => {
   const offer = item.offers[0] ?? null;
 
@@ -1858,12 +1858,12 @@ return (
       href={`/products/${item.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-lg"
     >
-      <div className="flex h-60 items-center justify-center overflow-hidden border-b border-stone-100 bg-[#FAFAF9] p-8">
+      <div className="flex h-48 items-center justify-center overflow-hidden border-b border-stone-100 bg-[#FAFAF9] p-5 sm:h-56 sm:p-6 lg:h-60 lg:p-8">
         {item.images[0]?.url ? (
           <img
             src={item.images[0].url}
             alt={item.fullName}
-            className="h-full w-full scale-[0.92] object-contain object-center transition-transform duration-500 group-hover:scale-[0.96]"
+            className="max-h-full max-w-full object-contain object-center transition-transform duration-500 group-hover:scale-[1.02]"
           />
         ) : (
           <div className="text-sm text-stone-400">
