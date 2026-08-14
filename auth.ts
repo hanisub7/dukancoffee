@@ -21,19 +21,29 @@ pages: {
   signIn: "/login",
 },
 
-  callbacks: {
+callbacks: {
   authorized({ auth, request }) {
     const isAdminRoute =
       request.nextUrl.pathname.startsWith("/admin");
 
-    if (isAdminRoute) {
-      return Boolean(auth?.user);
+    if (!isAdminRoute) {
+      return true;
     }
 
-    return true;
+    const role = (
+      auth?.user as
+        | { role?: AdminRole }
+        | undefined
+    )?.role;
+
+    return (
+      role === "SUPER_ADMIN" ||
+      role === "ADMIN" ||
+      role === "EDITOR"
+    );
   },
 
-    async jwt({ token, user }) {
+  async jwt({ token, user }) {
       if (user) {
         const authenticatedUser = user as typeof user & {
           role: AdminRole;
