@@ -102,12 +102,12 @@ export default async function BoxContentsPage({
           />
         </div>
 
-        <button
-          type="submit"
-          className="self-end rounded-lg bg-stone-900 px-5 py-2 font-medium text-white transition hover:bg-stone-700"
-        >
-          Add item
-        </button>
+<button
+  type="submit"
+  className="self-end rounded-lg bg-brand px-5 py-2 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md"
+>
+  Add item
+</button>
       </form>
 
       {product.boxContents.length === 0 ? (

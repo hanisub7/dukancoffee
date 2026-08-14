@@ -110,12 +110,12 @@ export default async function ProductOffersPage({
         </div>
 
         {!isArchived && (
-          <Link
-            href={`/admin/products/${product.id}/offers/new`}
-            className="inline-flex w-fit rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
-          >
-            + Add Offer
-          </Link>
+<Link
+  href={`/admin/products/${product.id}/offers/new`}
+  className="inline-flex w-fit items-center justify-center rounded-lg bg-orange-500 px-4 py-2 font-semibold text-white shadow-sm transition-colors hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+>
+  + Add Offer
+</Link>
         )}
       </div>
 

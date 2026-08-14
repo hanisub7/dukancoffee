@@ -203,12 +203,12 @@ export default async function ProductDocumentsPage({
             </div>
 
             <div className="flex items-end justify-end">
-              <button
-                type="submit"
-                className="rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
-              >
-                Add Document
-              </button>
+<button
+  type="submit"
+  className="rounded-lg bg-brand px-6 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
+>
+  Add Document
+</button>
             </div>
           </fieldset>
         </form>

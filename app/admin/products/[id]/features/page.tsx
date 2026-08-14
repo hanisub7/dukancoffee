@@ -201,7 +201,7 @@ export default async function ProductFeaturesPage({
                     isArchived ||
                     availableFeatures.length === 0
                   }
-                  className="mt-4 rounded-lg bg-black px-5 py-3 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                  className="mt-4 rounded-lg bg-brand px-5 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
                 >
                   Add Feature
                 </button>
@@ -290,7 +290,7 @@ export default async function ProductFeaturesPage({
 
                 <button
                   type="submit"
-                  className="rounded-lg bg-black px-5 py-3 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                  className="rounded-lg bg-brand px-5 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
                 >
                   Create and Add Feature
                 </button>

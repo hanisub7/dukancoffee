@@ -213,12 +213,12 @@ export default function OfferForm({
           Cancel
         </Link>
 
-        <button
-          type="submit"
-          className="rounded-lg bg-black px-5 py-2 font-medium text-white hover:bg-gray-800"
-        >
-          {submitLabel}
-        </button>
+<button
+  type="submit"
+  className="rounded-lg bg-brand px-5 py-2 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md"
+>
+  {submitLabel}
+</button>
       </div>
     </form>
   );

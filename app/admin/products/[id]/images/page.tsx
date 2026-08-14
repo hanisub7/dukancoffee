@@ -225,7 +225,7 @@ export default async function ProductImagesPage({
             <div className="flex justify-end md:col-span-2">
               <button
                 type="submit"
-                className="rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                className="rounded-lg bg-brand px-6 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
               >
                 Add Image
               </button>
@@ -439,7 +439,7 @@ export default async function ProductImagesPage({
 
                             <button
                               type="submit"
-                              className="rounded-lg bg-black px-5 py-2.5 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+                              className="rounded-lg bg-brand px-6 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
                             >
                               Save Changes
                             </button>
@@ -468,7 +468,7 @@ export default async function ProductImagesPage({
                             <button
                               type="submit"
                               disabled={isArchived}
-                              className="text-sm font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400 disabled:no-underline"
+                              className="rounded-lg bg-brand px-6 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
                             >
                               Delete Image
                             </button>

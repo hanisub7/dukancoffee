@@ -161,12 +161,12 @@ export default async function ProductSourcesPage({
             </div>
 
             <div className="md:col-span-2 flex justify-end">
-              <button
-                type="submit"
-                className="rounded-lg bg-black px-6 py-3 text-white"
-              >
-                Add Source
-              </button>
+<button
+  type="submit"
+  className="rounded-lg bg-brand px-6 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md"
+>
+  Add Source
+</button>
             </div>
           </fieldset>
         </form>

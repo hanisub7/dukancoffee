@@ -565,7 +565,7 @@ export default async function ProductSpecificationsPage({
           <div className="mt-10 flex justify-end border-t pt-8">
             <button
               type="submit"
-              className="rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="rounded-lg bg-brand px-6 py-3 font-medium !text-white shadow-sm transition hover:bg-brand-hover hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400 disabled:shadow-none"
             >
               {isArchived
                 ? "Archived Product"
