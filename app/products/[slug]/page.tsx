@@ -1222,6 +1222,10 @@ const relatedProducts = await getRelatedProducts({
   productFamilyId: product.productFamilyId,
 });
 
+const hasAffiliateOffers = rankedOffers.some(
+  (offer) => Boolean(offer.affiliateUrl),
+);
+
   return (
     <main
       dir="rtl"
@@ -1697,10 +1701,18 @@ return (
         );
       })}
     </tbody>
-  </table>
+</table>
 </div>
 
-      <div className="border-t border-stone-100 bg-stone-50 px-5 py-4">
+{hasAffiliateOffers ? (
+  <div className="border-t border-stone-100 px-5 py-3">
+    <p className="text-xs text-stone-500">
+      قد نحصل على عمولة دون تكلفة إضافية على المشتري.
+    </p>
+  </div>
+) : null}
+
+<div className="border-t border-stone-100 bg-stone-50 px-5 py-4">
         <p className="text-xs leading-5 text-stone-500">
           الأسعار المشروطة تتطلب استيفاء شروط العرض، مثل
           استخدام بطاقة بنكية مؤهلة أو رمز خصم. تحقق من
