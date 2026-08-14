@@ -112,12 +112,6 @@ const categories = [
   },
 ] as const;
 
-const adminEmail =
-  process.env.SEED_ADMIN_EMAIL ?? "admin@dukancoffee.com";
-
-const adminPassword =
-  process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
-
 async function seedCountries(): Promise<void> {
   for (const country of countries) {
     await prisma.country.upsert({
@@ -161,6 +155,14 @@ async function seedCategories(): Promise<void> {
 }
 
 async function seedAdminUser(): Promise<void> {
+    const adminEmail = process.env.SEED_ADMIN_EMAIL;
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    throw new Error(
+      "SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must be set before running the seed.",
+    );
+  }
   const existingAdmin = await prisma.adminUser.findUnique({
     where: {
       email: adminEmail,
@@ -240,7 +242,7 @@ async function main(): Promise<void> {
   console.log(`Documents created: ${documentCount}`);
   console.log(`Sources created: ${sourceCount}`);
 
-  console.log(`Admin account processed: ${adminEmail}`);
+  console.log("Admin account processed.");
 }
 
 main()
