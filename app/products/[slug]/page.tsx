@@ -1228,6 +1228,67 @@ const relatedProducts = await getRelatedProducts({
 const hasAffiliateOffers = rankedOffers.some(
   (offer) => Boolean(offer.affiliateUrl),
 );
+const productCanonicalUrl =
+  `https://dukancoffee.com/products/${product.slug}`;
+
+const productImages = product.images
+  .map((image) => image.url)
+  .filter(Boolean);
+
+const productJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+
+  name: product.fullName,
+
+  url: productCanonicalUrl,
+
+  brand: {
+    "@type": "Brand",
+    name: product.brand.name,
+  },
+
+  category: product.category.nameAr,
+
+  ...(product.model
+    ? {
+        model: product.model,
+      }
+    : {}),
+
+  ...(product.modelNumber
+    ? {
+        mpn: product.modelNumber,
+      }
+    : {}),
+
+  ...(productImages.length > 0
+    ? {
+        image: productImages,
+      }
+    : {}),
+
+  ...(rankedOffers.length > 0
+    ? {
+        offers: rankedOffers.map((offer) => ({
+          "@type": "Offer",
+
+          price: decimalToNumber(
+            offer.currentPrice,
+          ),
+
+          priceCurrency: offer.currencyCode,
+
+          url: offer.productUrl,
+
+          seller: {
+            "@type": "Organization",
+            name: offer.retailer.name,
+          },
+        })),
+      }
+    : {}),
+};
 
   return (
     <main
@@ -1237,6 +1298,16 @@ const hasAffiliateOffers = rankedOffers.some(
       }
       className="min-h-screen bg-white text-black"
     >
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(productJsonLd).replace(
+      /</g,
+      "\\u003c",
+    ),
+  }}
+/>
+
       <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
         <nav
           aria-label="مسار الصفحة"
