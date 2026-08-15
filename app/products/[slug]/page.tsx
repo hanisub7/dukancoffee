@@ -791,13 +791,16 @@ export async function generateMetadata({
 
   if (!product) {
     return {
-      title: "المنتج غير موجود | DukanCoffee",
+      title: "المنتج غير موجود",
     };
   }
 
   return {
-    title: `${product.fullName} | DukanCoffee`,
+    title: product.fullName,
     description: `قارن أسعار ${product.fullName} وتابع تغير السعر عبر DukanCoffee.`,
+    alternates: {
+      canonical: `/products/${slug}`,
+    },
   };
 }
 

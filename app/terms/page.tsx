@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "الشروط والأحكام | DukanCoffee",
+  title: "الشروط والأحكام",
   description:
     "تعرف على شروط وأحكام استخدام موقع DukanCoffee.",
+  alternates: {
+    canonical: "/terms",
+  },
 };
 
 export default function TermsPage() {

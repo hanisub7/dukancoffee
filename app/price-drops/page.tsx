@@ -3,7 +3,10 @@ import Link from "next/link";
 import { getPriceDrops } from "@/app/lib/price-drops/queries";
 
 export const metadata = {
-  title: "انخفاضات الأسعار | DukanCoffee",
+  title: "انخفاضات الأسعار",
+  alternates: {
+    canonical: "/price-drops",
+  },
 };
 
 type PageProps = {

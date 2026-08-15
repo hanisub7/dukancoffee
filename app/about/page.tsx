@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "من نحن | DukanCoffee",
+  title: "من نحن",
   description:
     "تعرف على DukanCoffee ومنهجنا في عرض أسعار ومعلومات آلات القهوة.",
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {

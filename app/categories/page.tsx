@@ -5,9 +5,12 @@ import { getCategoryCatalog } from "@/app/lib/categories/queries";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "التصنيفات | DukanCoffee",
+  title: "التصنيفات",
   description:
     "استعرض تصنيفات آلات القهوة المتوفرة في DukanCoffee.",
+  alternates: {
+    canonical: "/categories",
+  },
 };
 
 function getProductCountText(count: number) {

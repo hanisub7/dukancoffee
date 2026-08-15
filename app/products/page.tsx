@@ -13,9 +13,12 @@ import {
 } from "@/app/lib/products/queries";
 
 export const metadata: Metadata = {
-  title: "آلات القهوة | DukanCoffee",
+  title: "آلات القهوة",
   description:
     "تصفح آلات القهوة وقارن الأسعار الحالية وتابع تغير الأسعار عبر DukanCoffee.",
+  alternates: {
+    canonical: "/products",
+  },
 };
 
 type ProductsPageSearchParams = {

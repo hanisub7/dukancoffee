@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import PublicShell from "./components/layout/public-shell";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,7 +16,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DukanCoffee",
+  metadataBase: new URL("https://dukancoffee.com"),
+
+  title: {
+    default: "DukanCoffee",
+    template: "%s | DukanCoffee",
+  },
+
   description: "قارن أسعار آلات القهوة وتتبع تغيرها.",
 };
 

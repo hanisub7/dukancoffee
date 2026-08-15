@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "سياسة الخصوصية | DukanCoffee",
+  title: "سياسة الخصوصية",
   description:
     "تعرف على سياسة الخصوصية في DukanCoffee وكيفية التعامل مع بيانات المستخدم.",
+  alternates: {
+    canonical: "/privacy",
+  },
 };
 
 export default function PrivacyPage() {

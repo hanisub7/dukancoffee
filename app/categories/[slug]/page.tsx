@@ -16,27 +16,30 @@ export async function generateMetadata({
 }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const category = await prisma.category.findFirst({
-    where: {
-      slug,
-      active: true,
-      deletedAt: null,
-    },
-    select: {
-      nameAr: true,
-    },
-  });
+const category = await prisma.category.findFirst({
+  where: {
+    slug,
+    active: true,
+    deletedAt: null,
+  },
+  select: {
+    nameAr: true,
+  },
+});
 
-  if (!category) {
-    return {
-      title: "التصنيف غير موجود | DukanCoffee",
-    };
-  }
-
+if (!category) {
   return {
-    title: `${category.nameAr} | DukanCoffee`,
-    description: `استعرض آلات القهوة ضمن تصنيف ${category.nameAr} وقارن الأسعار الحالية.`,
+    title: "التصنيف غير موجود",
   };
+}
+
+return {
+  title: category.nameAr,
+  description: `استعرض آلات القهوة ضمن تصنيف ${category.nameAr} وقارن الأسعار الحالية.`,
+  alternates: {
+    canonical: `/categories/${slug}`,
+  },
+};
 }
 
 export default async function CategoryPage({

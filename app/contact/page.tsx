@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "تواصل معنا | DukanCoffee",
+  title: "تواصل معنا",
   description: "تواصل مع فريق DukanCoffee.",
+  alternates: {
+    canonical: "/contact",
+  },
 };
 
 export default function ContactPage() {

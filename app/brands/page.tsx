@@ -4,9 +4,12 @@ import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "العلامات التجارية | DukanCoffee",
+  title: "العلامات التجارية",
   description:
     "تصفح العلامات التجارية لآلات القهوة واكتشف المنتجات المتوفرة لكل علامة.",
+  alternates: {
+    canonical: "/brands",
+  },
 };
 
 function getProductCountText(count: number) {

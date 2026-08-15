@@ -29,13 +29,16 @@ export async function generateMetadata({
 
   if (!brand) {
     return {
-      title: "العلامة التجارية غير موجودة | DukanCoffee",
+      title: "العلامة التجارية غير موجودة",
     };
   }
 
   return {
-    title: `${brand.name} | DukanCoffee`,
+    title: brand.name,
     description: `استعرض آلات القهوة من ${brand.name} وقارن الأسعار الحالية.`,
+    alternates: {
+      canonical: `/brands/${slug}`,
+    },
   };
 }
 

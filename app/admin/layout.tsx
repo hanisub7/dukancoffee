@@ -1,8 +1,17 @@
-import { auth } from "../../auth";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+import { auth } from "../../auth";
 
 import AdminSidebar from "@/app/components/admin/AdminSidebar";
 import AdminSignOut from "@/app/components/admin/admin-sign-out";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AdminLayout({
   children,
