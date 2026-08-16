@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import TrackedRetailerLink from "@/app/components/analytics/TrackedRetailerLink";
 
 import { prisma } from "@/app/lib/prisma";
 import PriceHistoryChart from "@/components/products/PriceHistoryChart";
@@ -1762,14 +1763,12 @@ return (
             ) : null}
 
             <td className="px-6 py-6 text-center align-middle">
-              <a
-                href={retailerUrl}
-                target="_blank"
-                rel="sponsored noopener noreferrer"
-                className="inline-flex h-11 items-center justify-center rounded-xl bg-brand px-6 text-sm font-semibold !text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-hover hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
-              >
-                الانتقال للمتجر
-              </a>
+<TrackedRetailerLink
+  href={retailerUrl}
+  retailer={offer.retailer.name}
+  product={product.fullName}
+  productId={product.id}
+/>
             </td>
           </tr>
         );
