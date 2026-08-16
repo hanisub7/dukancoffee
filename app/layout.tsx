@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import PublicShell from "./components/layout/public-shell";
@@ -31,13 +32,37 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaMeasurementId =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
   return (
     <html lang="ar" dir="rtl">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-white text-neutral-900 antialiased`}
+  className={`${geistSans.variable} ${geistMono.variable} bg-white text-neutral-900 antialiased`}
+>
+  <PublicShell>{children}</PublicShell>
+
+  {gaMeasurementId && (
+    <>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+        strategy="afterInteractive"
+      />
+
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
       >
-        <PublicShell>{children}</PublicShell>
-      </body>
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${gaMeasurementId}');
+        `}
+      </Script>
+    </>
+  )}
+</body>
     </html>
   );
 }
