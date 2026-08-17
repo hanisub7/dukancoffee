@@ -75,7 +75,7 @@ export default function NewCategoryPage() {
         <div className="mt-8 flex justify-end">
           <button
             type="submit"
-            className="rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800"
+            className="rounded-lg bg-brand px-4 py-2 font-semibold text-white transition-colors hover:bg-brand-hover"
           >
             Save Category
           </button>

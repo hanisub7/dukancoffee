@@ -185,7 +185,7 @@ export default async function ProductOffersPage({
           {!isArchived && (
             <Link
               href={`/admin/products/${product.id}/offers/new`}
-              className="mt-6 inline-flex rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
+              className="rounded-lg bg-brand px-4 py-2 font-semibold text-white transition-colors hover:bg-brand-hover"
             >
               Add First Offer
             </Link>
