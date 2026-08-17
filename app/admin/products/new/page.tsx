@@ -341,7 +341,7 @@ export default async function NewProductPage() {
           <button
             type="submit"
             disabled={cannotCreateProduct}
-            className="rounded-lg bg-black px-6 py-3 text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="rounded-lg bg-brand px-6 py-3 !text-white hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             Save Product Variant
           </button>
