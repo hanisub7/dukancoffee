@@ -1,10 +1,23 @@
 import Link from "next/link";
+
+import { deleteBrand } from "@/app/actions/brand";
 import { prisma } from "../../lib/prisma";
 
 export default async function BrandsPage() {
   const brands = await prisma.brand.findMany({
     orderBy: {
       name: "asc",
+    },
+    select: {
+      id: true,
+      name: true,
+      officialWebsiteUrl: true,
+      active: true,
+      _count: {
+        select: {
+          products: true,
+        },
+      },
     },
   });
 
@@ -29,7 +42,9 @@ export default async function BrandsPage() {
 
       {brands.length === 0 ? (
         <div className="mt-8 rounded-lg border bg-white p-12 text-center">
-          <h2 className="text-xl font-semibold">No brands yet</h2>
+          <h2 className="text-xl font-semibold">
+            No brands yet
+          </h2>
 
           <p className="mt-2 text-gray-500">
             Create your first brand.
@@ -40,38 +55,89 @@ export default async function BrandsPage() {
           <table className="w-full">
             <thead className="border-b bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left">Brand</th>
-                <th className="px-6 py-4 text-left">Website</th>
-                <th className="px-6 py-4 text-left">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+                <th className="px-6 py-4 text-left">
+                  Brand
+                </th>
+
+                <th className="px-6 py-4 text-left">
+                  Website
+                </th>
+
+                <th className="px-6 py-4 text-left">
+                  Status
+                </th>
+
+                <th className="px-6 py-4 text-right">
+                  Actions
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              {brands.map((brand) => (
-                <tr key={brand.id} className="border-b last:border-b-0">
-                  <td className="px-6 py-4 font-medium">
-                    {brand.name}
-                  </td>
+              {brands.map((brand) => {
+                const canDelete =
+                  brand._count.products === 0;
 
-                  <td className="px-6 py-4">
-                    {brand.officialWebsiteUrl ?? "-"}
-                  </td>
+                const deleteBrandAction =
+                  deleteBrand.bind(null, brand.id);
 
-                  <td className="px-6 py-4">
-                    {brand.active ? "Active" : "Inactive"}
-                  </td>
+                return (
+                  <tr
+                    key={brand.id}
+                    className="border-b last:border-b-0"
+                  >
+                    <td className="px-6 py-4 font-medium">
+                      {brand.name}
 
-                  <td className="px-6 py-4 text-right">
-                    <Link
-                      href={`/admin/brands/${brand.id}/edit`}
-                      className="font-medium text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                      <p className="mt-1 text-xs text-gray-400">
+                        {brand._count.products}{" "}
+                        {brand._count.products === 1
+                          ? "product"
+                          : "products"}
+                      </p>
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {brand.officialWebsiteUrl ?? "-"}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      {brand.active
+                        ? "Active"
+                        : "Inactive"}
+                    </td>
+
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-4">
+                        <Link
+                          href={`/admin/brands/${brand.id}/edit`}
+                          className="font-medium text-blue-600 hover:underline"
+                        >
+                          Edit
+                        </Link>
+
+                        {canDelete ? (
+                          <form action={deleteBrandAction}>
+                            <button
+                              type="submit"
+                              className="font-medium text-red-600 hover:underline"
+                            >
+                              Delete
+                            </button>
+                          </form>
+                        ) : (
+                          <span
+                            className="cursor-not-allowed text-sm text-gray-400"
+                            title="Brands assigned to products cannot be deleted."
+                          >
+                            Delete
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

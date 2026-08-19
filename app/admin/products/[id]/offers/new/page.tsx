@@ -130,7 +130,7 @@ export default async function NewProductOfferPage({
 
             <Link
               href="/admin/retailers/new"
-              className="rounded-lg bg-black px-4 py-2 font-medium text-white hover:bg-gray-800"
+              className="rounded-lg bg-brand px-4 py-2 font-semibold text-white transition-colors hover:bg-brand-hover"
             >
               Add Retailer
             </Link>

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+
 import { prisma } from "../lib/prisma";
 
 function createSlug(value: string) {
@@ -44,11 +45,15 @@ export async function createBrand(formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/admin/brands");
   revalidatePath("/admin/products/new");
+  revalidatePath("/brands");
 
   redirect("/admin/brands");
 }
 
-export async function updateBrand(brandId: string, formData: FormData) {
+export async function updateBrand(
+  brandId: string,
+  formData: FormData,
+) {
   const name = String(formData.get("name") ?? "").trim();
   const website = String(formData.get("website") ?? "").trim();
   const active = formData.get("active") === "on";
@@ -91,7 +96,49 @@ export async function updateBrand(brandId: string, formData: FormData) {
   revalidatePath("/admin");
   revalidatePath("/admin/brands");
   revalidatePath("/admin/products/new");
+  revalidatePath("/brands");
   revalidatePath(`/admin/brands/${brandId}/edit`);
 
   redirect("/admin/brands");
+}
+
+export async function deleteBrand(brandId: string) {
+  if (!brandId) {
+    throw new Error("Brand ID is required.");
+  }
+
+  const brand = await prisma.brand.findUnique({
+    where: {
+      id: brandId,
+    },
+    select: {
+      id: true,
+      _count: {
+        select: {
+          products: true,
+        },
+      },
+    },
+  });
+
+  if (!brand) {
+    throw new Error("Brand not found.");
+  }
+
+  if (brand._count.products > 0) {
+    throw new Error(
+      "This brand cannot be deleted because it is assigned to one or more products.",
+    );
+  }
+
+  await prisma.brand.delete({
+    where: {
+      id: brandId,
+    },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/brands");
+  revalidatePath("/admin/products/new");
+  revalidatePath("/brands");
 }
