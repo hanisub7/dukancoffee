@@ -2,7 +2,7 @@ import { createProduct } from "../../../actions/product";
 import { prisma } from "../../../lib/prisma";
 
 export default async function NewProductPage() {
-  const [brands, categories, productFamilies] =
+  const [brands, categories, productFamilies, drinks] =
     await Promise.all([
       prisma.brand.findMany({
         where: {
@@ -72,6 +72,26 @@ export default async function NewProductPage() {
               nameEn: true,
             },
           },
+        },
+      }),
+
+      prisma.drink.findMany({
+        where: {
+          active: true,
+          deletedAt: null,
+        },
+        orderBy: [
+          {
+            sortOrder: "asc",
+          },
+          {
+            nameEn: "asc",
+          },
+        ],
+        select: {
+          id: true,
+          nameEn: true,
+          nameAr: true,
         },
       }),
     ]);
@@ -269,6 +289,46 @@ export default async function NewProductPage() {
               the same machine. Leave this blank to create a new
               family using the Product Family Name above.
             </p>
+          </div>
+
+          <div className="md:col-span-2">
+            <div className="mb-3">
+              <h2 className="font-medium">
+                Supported Drinks
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Select all drinks this coffee machine can
+                prepare.
+              </p>
+            </div>
+
+            {drinks.length === 0 ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                No active drinks exist yet. You can add drinks
+                from the Drinks section in Admin.
+              </div>
+            ) : (
+              <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-3">
+                {drinks.map((drink) => (
+                  <label
+                    key={drink.id}
+                    className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
+                  >
+                    <input
+                      type="checkbox"
+                      name="drinkIds"
+                      value={drink.id}
+                      className="h-4 w-4"
+                    />
+
+                    <span className="text-sm font-medium">
+                      {drink.nameEn} — {drink.nameAr}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="md:col-span-2">

@@ -16,9 +16,15 @@ export type ProductGridItem = {
   priceMovement?: ProductPriceMovement;
   priceMovementText?: string | null;
   isLowestPrice?: boolean;
+
   quickSpecs: Array<{
     label: string;
     value: string;
+  }>;
+
+  drinks: Array<{
+    nameEn: string;
+    nameAr: string;
   }>;
 };
 
@@ -78,6 +84,7 @@ export default function ProductGrid({
           priceMovementText={product.priceMovementText}
           isLowestPrice={product.isLowestPrice}
           quickSpecs={product.quickSpecs}
+          drinks={product.drinks}
         />
       ))}
     </div>

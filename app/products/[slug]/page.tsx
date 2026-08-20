@@ -402,6 +402,20 @@ select: {
         },
       },
 
+      drinks: {
+        orderBy: {
+          createdAt: "asc",
+        },
+        select: {
+          drink: {
+            select: {
+              nameEn: true,
+              nameAr: true,
+            },
+          },
+        },
+      },
+
       specification: {
         select: {
           machineType: true,
@@ -1219,6 +1233,10 @@ const quickFacts = product.specification
   : [];
 
 
+const supportedDrinks = product.drinks.map(
+  (productDrink) => productDrink.drink,
+);
+
 const relatedProducts = await getRelatedProducts({
   id: product.id,
   brandId: product.brandId,
@@ -1566,6 +1584,47 @@ bestConditionalPrice !== null ? (
             >
               {fact.value}
             </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+) : null}
+
+{supportedDrinks.length > 0 ? (
+  <section className="border-b border-stone-200 bg-white">
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mb-7 text-center">
+        <p className="text-sm font-semibold text-[#C85A1A]">
+          المشروبات
+        </p>
+
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
+          المشروبات التي يمكن تحضيرها
+        </h2>
+
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-3">
+        {supportedDrinks.map((drink) => (
+          <div
+            key={drink.nameEn}
+            className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-4 py-2.5 text-sm font-semibold text-[#C85A1A]"
+          >
+            <span aria-hidden="true">
+              ☕
+            </span>
+
+            <span>
+              {drink.nameAr}
+            </span>
+
+            <span
+              dir="ltr"
+              className="text-xs font-medium text-stone-500"
+            >
+              {drink.nameEn}
+            </span>
           </div>
         ))}
       </div>

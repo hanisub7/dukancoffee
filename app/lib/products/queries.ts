@@ -40,6 +40,12 @@ export type ProductCatalogItem = {
   priceMovementText: string | null;
   isLowestPrice: boolean;
   quickSpecs: ProductCatalogQuickSpec[];
+  drinks: ProductCatalogDrink[];
+};
+
+export type ProductCatalogDrink = {
+  nameEn: string;
+  nameAr: string;
 };
 
 export type ProductCatalogFilterOption = {
@@ -372,6 +378,26 @@ specification: {
   },
 },
 
+drinks: {
+  where: {
+    drink: {
+      active: true,
+      deletedAt: null,
+    },
+  },
+  orderBy: {
+    sortOrder: "asc",
+  },
+  select: {
+    drink: {
+      select: {
+        nameEn: true,
+        nameAr: true,
+      },
+    },
+  },
+},
+
 
           images: {
             orderBy: [
@@ -506,6 +532,10 @@ return {
   quickSpecs: buildQuickSpecs(
     product.specification,
   ),
+drinks: product.drinks.map((productDrink) => ({
+  nameEn: productDrink.drink.nameEn,
+  nameAr: productDrink.drink.nameAr,
+})),
 };
     });
 

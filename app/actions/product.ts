@@ -50,6 +50,17 @@ function getOptionalInteger(
   return parsedValue;
 }
 
+function getDrinkIds(formData: FormData): string[] {
+  return Array.from(
+    new Set(
+      formData
+        .getAll("drinkIds")
+        .map((value) => String(value).trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
 function createSlug(value: string): string {
   const slug = value
     .toLowerCase()
@@ -179,6 +190,33 @@ async function validateUniqueModelNumber(input: {
   }
 }
 
+async function validateDrinkIds(
+  drinkIds: string[],
+): Promise<void> {
+  if (drinkIds.length === 0) {
+    return;
+  }
+
+  const validDrinks = await prisma.drink.findMany({
+    where: {
+      id: {
+        in: drinkIds,
+      },
+      active: true,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (validDrinks.length !== drinkIds.length) {
+    throw new Error(
+      "One or more selected drinks do not exist or are inactive.",
+    );
+  }
+}
+
 export async function createProduct(
   formData: FormData,
 ): Promise<never> {
@@ -232,6 +270,8 @@ export async function createProduct(
     "warrantyUrl",
   );
 
+  const drinkIds = getDrinkIds(formData);
+
   if (!fullName || !model || !brandId || !categoryId) {
     throw new Error(
       "Please complete all required product fields.",
@@ -256,6 +296,8 @@ export async function createProduct(
     brandId,
     modelNumber,
   });
+
+  await validateDrinkIds(drinkIds);
 
   const productId = randomUUID();
 
@@ -314,6 +356,18 @@ export async function createProduct(
         manualUrl,
         warrantyUrl,
         status: "DRAFT",
+
+        drinks:
+          drinkIds.length > 0
+            ? {
+                create: drinkIds.map(
+                  (drinkId, index) => ({
+                    drinkId,
+                    sortOrder: index,
+                  }),
+                ),
+              }
+            : undefined,
       },
     });
   });
@@ -382,6 +436,8 @@ export async function updateProduct(
     getRequiredString(formData, "status"),
   );
 
+  const drinkIds = getDrinkIds(formData);
+
   if (!id) {
     throw new Error("Product ID is required.");
   }
@@ -432,30 +488,50 @@ export async function updateProduct(
     excludedProductId: id,
   });
 
+  await validateDrinkIds(drinkIds);
+
   const slugBase = createSlug(
     `${fullName}-${modelNumber || model}`,
   );
 
   const slug = `${slugBase}-${id.slice(0, 8)}`;
 
-  await prisma.product.update({
-    where: {
-      id,
-    },
-    data: {
-      fullName,
-      model,
-      modelNumber,
-      releaseYear,
-      slug,
-      brandId,
-      categoryId,
-      productFamilyId,
-      officialProductUrl,
-      manualUrl,
-      warrantyUrl,
-      status,
-    },
+  await prisma.$transaction(async (tx) => {
+    await tx.product.update({
+      where: {
+        id,
+      },
+      data: {
+        fullName,
+        model,
+        modelNumber,
+        releaseYear,
+        slug,
+        brandId,
+        categoryId,
+        productFamilyId,
+        officialProductUrl,
+        manualUrl,
+        warrantyUrl,
+        status,
+      },
+    });
+
+    await tx.productDrink.deleteMany({
+      where: {
+        productId: id,
+      },
+    });
+
+    if (drinkIds.length > 0) {
+      await tx.productDrink.createMany({
+        data: drinkIds.map((drinkId, index) => ({
+          productId: id,
+          drinkId,
+          sortOrder: index,
+        })),
+      });
+    }
   });
 
   revalidatePath("/admin");

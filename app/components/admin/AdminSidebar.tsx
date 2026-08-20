@@ -37,6 +37,13 @@ export default function AdminSidebar() {
         </Link>
 
         <Link
+          href="/admin/drinks"
+          className="block hover:text-blue-600"
+        >
+          Drinks
+        </Link>
+
+        <Link
           href="/admin/retailers"
           className="block hover:text-blue-600"
         >

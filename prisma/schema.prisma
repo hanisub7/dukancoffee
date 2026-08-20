@@ -126,6 +126,7 @@ model Product {
 
   specification ProductSpecification?
   features      ProductFeature[]
+  drinks        ProductDrink[]
   boxContents   BoxContent[]
   images        ProductImage[]
   documents     Document[]
@@ -233,6 +234,42 @@ model ProductImage {
   @@index([productId])
   @@index([imageType])
   @@map("product_images")
+}
+
+model Drink {
+  id        String  @id @default(uuid()) @db.Uuid
+  nameEn    String  @map("name_en")
+  nameAr    String  @map("name_ar")
+  slug      String  @unique
+  active    Boolean @default(true)
+  sortOrder Int     @default(0) @map("sort_order")
+
+  products ProductDrink[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([active])
+  @@index([sortOrder])
+  @@map("drinks")
+}
+
+model ProductDrink {
+  productId String @map("product_id") @db.Uuid
+  drinkId   String @map("drink_id") @db.Uuid
+
+  sortOrder Int @default(0) @map("sort_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  drink   Drink   @relation(fields: [drinkId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([productId, drinkId])
+  @@index([drinkId])
+  @@index([productId, sortOrder])
+  @@map("product_drinks")
 }
 
 model Document {

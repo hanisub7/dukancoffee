@@ -11,6 +11,11 @@ type ProductQuickSpec = {
   value: string;
 };
 
+type ProductDrink = {
+  nameEn: string;
+  nameAr: string;
+};
+
 type ProductCardProps = {
   slug: string;
   name: string;
@@ -23,6 +28,7 @@ type ProductCardProps = {
   priceMovementText?: string | null;
   isLowestPrice?: boolean;
   quickSpecs?: ProductQuickSpec[];
+  drinks?: ProductDrink[];
 };
 
 function formatPrice(
@@ -115,6 +121,7 @@ export default function ProductCard({
   priceMovementText,
   isLowestPrice = false,
   quickSpecs = [],
+  drinks = [],
 }: ProductCardProps) {
   const productUrl = `/products/${slug}`;
 
@@ -129,11 +136,15 @@ export default function ProductCard({
     price !== null &&
     price !== undefined;
 
+  const visibleDrinks = drinks.slice(0, 4);
+  const remainingDrinksCount =
+    Math.max(0, drinks.length - visibleDrinks.length);
+
   return (
-<article
-  dir="rtl"
-  className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl"
->
+    <article
+      dir="rtl"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl"
+    >
       {isLowestPrice ? (
         <div className="absolute right-4 top-4 z-10">
           <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-bold text-[#C85A1A] shadow-sm">
@@ -215,78 +226,117 @@ export default function ProductCard({
             </h2>
           </Link>
 
+          {quickSpecs.length > 0 ? (
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              {quickSpecs.slice(0, 3).map((specification) => (
+                <span
+                  key={`${specification.label}-${specification.value}`}
+                  title={`${specification.label}: ${specification.value}`}
+                  className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-medium text-stone-700"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="shrink-0 text-[13px]"
+                  >
+                    {getQuickSpecIcon(specification.label)}
+                  </span>
 
-{quickSpecs.length > 0 ? (
-  <div className="mt-5 flex flex-wrap items-center gap-2">
-    {quickSpecs.slice(0, 3).map((specification) => (
-      <span
-        key={`${specification.label}-${specification.value}`}
-        title={`${specification.label}: ${specification.value}`}
-        className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-medium text-stone-700"
-      >
-        <span
-          aria-hidden="true"
-          className="shrink-0 text-[13px]"
-        >
-          {getQuickSpecIcon(specification.label)}
-        </span>
+                  <span className="truncate">
+                    {specification.value}
+                  </span>
+                </span>
+              ))}
+            </div>
+          ) : null}
 
-        <span className="truncate">
-          {specification.value}
-        </span>
-      </span>
-    ))}
-  </div>
-) : null}
+          {drinks.length > 0 ? (
+            <div className="mt-5">
+              <div className="mb-2 flex items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  className="text-sm"
+                >
+                  ☕
+                </span>
+
+                <p className="text-xs font-bold text-stone-600">
+                  المشروبات
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {visibleDrinks.map((drink) => (
+                  <span
+                    key={drink.nameEn}
+                    title={drink.nameEn}
+                    className="inline-flex items-center rounded-full border border-orange-100 bg-orange-50 px-2.5 py-1 text-xs font-semibold text-[#C85A1A]"
+                  >
+                    {drink.nameAr}
+                  </span>
+                ))}
+
+                {remainingDrinksCount > 0 ? (
+                  <span
+                    title={`${remainingDrinksCount} مشروبات إضافية`}
+                    className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-semibold text-stone-600"
+                  >
+                    +{remainingDrinksCount}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
         </div>
-<div className="mt-5 border-t border-stone-100 pt-5">
-  <div className="flex items-end justify-between gap-4">
-    <div>
-      <p className="text-xs font-medium text-stone-500">
-        السعر الحالي
-      </p>
 
-      {hasPrice ? (
-        <p
-          dir="ltr"
-          className="mt-2 text-left text-3xl font-extrabold tracking-tight text-[#C85A1A]"
-        >
-          {formatPrice(price, currencyCode)}
-        </p>
-      ) : (
-        <div className="mt-2">
-          <p className="text-sm font-semibold text-stone-700">
-            السعر غير متوفر حاليًا
-          </p>
+        <div className="mt-5 border-t border-stone-100 pt-5">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium text-stone-500">
+                السعر الحالي
+              </p>
 
-          <p className="mt-1 text-xs leading-5 text-stone-500">
-            تحقق من تفاصيل المنتج لمعرفة أحدث الأسعار.
-          </p>
+              {hasPrice ? (
+                <p
+                  dir="ltr"
+                  className="mt-2 text-left text-3xl font-extrabold tracking-tight text-[#C85A1A]"
+                >
+                  {formatPrice(price, currencyCode)}
+                </p>
+              ) : (
+                <div className="mt-2">
+                  <p className="text-sm font-semibold text-stone-700">
+                    السعر غير متوفر حاليًا
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-stone-500">
+                    تحقق من تفاصيل المنتج لمعرفة أحدث الأسعار.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {movementText ? (
+            <div className="mt-3 flex min-h-8 items-center gap-2 rounded-lg bg-stone-50 px-3 py-1.5 text-xs text-stone-600">
+              {movementSymbol ? (
+                <span
+                  aria-hidden="true"
+                  className="text-base font-semibold leading-none text-stone-700"
+                >
+                  {movementSymbol}
+                </span>
+              ) : null}
+
+              <span>{movementText}</span>
+            </div>
+          ) : hasPrice ? (
+            <div
+              className="mt-3 min-h-11"
+              aria-hidden="true"
+            />
+          ) : null}
         </div>
-      )}
-    </div>
-  </div>
 
-{movementText ? (
-  <div className="mt-3 flex min-h-8 items-center gap-2 rounded-lg bg-stone-50 px-3 py-1.5 text-xs text-stone-600">
-    {movementSymbol ? (
-      <span
-        aria-hidden="true"
-        className="text-base font-semibold leading-none text-stone-700"
-      >
-        {movementSymbol}
-      </span>
-    ) : null}
-
-    <span>{movementText}</span>
-  </div>
-) : hasPrice ? (
-  <div
-    className="mt-3 min-h-11"
-    aria-hidden="true"
-  />
-) : null}
-</div>
         <div className="mt-auto pt-4">
           <Link
             href={productUrl}
@@ -294,12 +344,12 @@ export default function ProductCard({
           >
             <span>عرض التفاصيل</span>
 
-          <span
-  aria-hidden="true"
-  className="text-base transition-transform duration-200 group-hover:translate-x-1"
->
-  ←
-</span>
+            <span
+              aria-hidden="true"
+              className="text-base transition-transform duration-200 group-hover:translate-x-1"
+            >
+              ←
+            </span>
           </Link>
         </div>
       </div>
